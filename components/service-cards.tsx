@@ -1,4 +1,10 @@
+ "use client"
+
+import { useCallback, useEffect, useRef, useState } from "react"
 import Image from "next/image"
+import useEmblaCarousel from "embla-carousel-react"
+
+import { cn } from "@/lib/utils"
 
 interface ServiceSection {
   id: string
@@ -8,6 +14,9 @@ interface ServiceSection {
   cta: string
   ctaLink: string
   imagePosition: "left" | "right"
+  images: string[]
+  autoplayDelay: number
+  autoplayOffset: number
 }
 
 const services: ServiceSection[] = [
@@ -20,6 +29,14 @@ const services: ServiceSection[] = [
     cta: "Schedule an Estimate",
     ctaLink: "https://romefinefinishes.dripjobs.com",
     imagePosition: "left",
+    images: [
+      "/images/cabinetry/top.jpg",
+      "/images/cabinetry/middle.jpg",
+      "/images/cabinetry/lighten.jpg",
+      "/images/cabinetry/kitchen.jpg",
+    ],
+    autoplayDelay: 7000,
+    autoplayOffset: 3000,
   },
   {
     id: "decks",
@@ -30,6 +47,13 @@ const services: ServiceSection[] = [
     cta: "Schedule an Estimate",
     ctaLink: "https://romefinefinishes.dripjobs.com",
     imagePosition: "right",
+    images: [
+      "/images/decks/deck.jpg",
+      "/images/decks/stair.jpg",
+      "/images/decks/490696987_1252399580226629_4455734148705608591_n.jpg",
+    ],
+    autoplayDelay: 8000,
+    autoplayOffset: 4500,
   },
   {
     id: "interiors",
@@ -40,8 +64,91 @@ const services: ServiceSection[] = [
     cta: "Schedule an Estimate",
     ctaLink: "https://romefinefinishes.dripjobs.com",
     imagePosition: "left",
+    images: [
+      "/images/interiors/fireplace.jpg",
+      "/images/interiors/bathroom.jpg",
+      "/images/interiors/cutout.jpg",
+    ],
+    autoplayDelay: 9000,
+    autoplayOffset: 6000,
   },
 ]
+
+function ServiceGallery({
+  images,
+  imageAlt,
+  autoplayDelay,
+  autoplayOffset,
+}: {
+  images: string[]
+  imageAlt: string
+  autoplayDelay: number
+  autoplayOffset: number
+}) {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start" })
+  const [selectedIndex, setSelectedIndex] = useState(0)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const scrollNext = useCallback(() => {
+    if (!emblaApi) return
+    if (!emblaApi.canScrollNext()) {
+      emblaApi.scrollTo(0)
+      return
+    }
+    emblaApi.scrollNext()
+  }, [emblaApi])
+
+  useEffect(() => {
+    if (!emblaApi) return
+
+    const onSelect = () => {
+      setSelectedIndex(emblaApi.selectedScrollSnap())
+    }
+
+    onSelect()
+    emblaApi.on("select", onSelect)
+
+    const startAutoplay = () => {
+      scrollNext()
+      intervalRef.current = window.setInterval(scrollNext, autoplayDelay)
+    }
+
+    timeoutRef.current = window.setTimeout(startAutoplay, autoplayOffset)
+
+    return () => {
+      emblaApi.off("select", onSelect)
+      if (timeoutRef.current) {
+        window.clearTimeout(timeoutRef.current)
+      }
+      if (intervalRef.current) {
+        window.clearInterval(intervalRef.current)
+      }
+    }
+  }, [emblaApi, scrollNext, autoplayDelay, autoplayOffset])
+
+  return (
+    <div ref={emblaRef} className="group relative overflow-hidden rounded-lg shadow-lg">
+      <div className="flex">
+        {images.map((src, idx) => (
+          <div key={src} className="relative shrink-0 grow-0 basis-full h-64 sm:h-80 md:h-[500px]">
+            <Image
+              src={src}
+              alt={`${imageAlt} slide ${idx + 1}`}
+              fill
+              className={cn(
+                "object-cover transition-transform duration-[4000ms] ease-out",
+                selectedIndex === idx ? "scale-105" : "scale-100"
+              )}
+              sizes="(max-width: 768px) 100vw, 600px"
+              priority={idx === 0}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 export default function ServiceCards() {
   return (
@@ -56,14 +163,12 @@ export default function ServiceCards() {
             <div key={service.id} id={service.id} className="grid md:grid-cols-2 gap-12 items-center">
               {/* Image - Left or Right */}
               <div className={`${service.imagePosition === "right" ? "md:order-2" : "md:order-1"}`}>
-                <div className="relative h-64 sm:h-80 md:h-[500px] rounded-lg overflow-hidden shadow-lg">
-                  <Image
-                    src={`/.jpg?height=500&width=500&query=${service.id} project showcase`}
-                    alt={service.imageAlt}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
+                <ServiceGallery
+                  images={service.images}
+                  imageAlt={service.imageAlt}
+                  autoplayDelay={service.autoplayDelay}
+                  autoplayOffset={service.autoplayOffset}
+                />
               </div>
 
               {/* Text Content */}
