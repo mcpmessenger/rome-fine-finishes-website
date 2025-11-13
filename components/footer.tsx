@@ -94,21 +94,6 @@ export default function Footer() {
                 />
               </a>
               <a
-                href="https://www.google.com/search?q=Rome+Fine+Finishes+reviews"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center transition-transform hover:scale-105"
-                aria-label="Google"
-              >
-                <Image
-                  src="/social-media-icon-google.png"
-                  alt="Google logo"
-                  width={48}
-                  height={48}
-                  className="h-10 w-10 sm:h-12 sm:w-12 object-contain"
-                />
-              </a>
-              <a
                 href="https://www.instagram.com/projectpartnersdsn/"
                 target="_blank"
                 rel="noopener noreferrer"
