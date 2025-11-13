@@ -56,7 +56,7 @@ export default function ServiceCards() {
             <div key={service.id} id={service.id} className="grid md:grid-cols-2 gap-12 items-center">
               {/* Image - Left or Right */}
               <div className={`${service.imagePosition === "right" ? "md:order-2" : "md:order-1"}`}>
-                <div className="relative h-96 md:h-[500px] rounded-lg overflow-hidden shadow-lg">
+                <div className="relative h-64 sm:h-80 md:h-[500px] rounded-lg overflow-hidden shadow-lg">
                   <Image
                     src={`/.jpg?height=500&width=500&query=${service.id} project showcase`}
                     alt={service.imageAlt}
@@ -68,13 +68,13 @@ export default function ServiceCards() {
 
               {/* Text Content */}
               <div className={`${service.imagePosition === "right" ? "md:order-1" : "md:order-2"} space-y-6`}>
-                <h3 className="text-3xl md:text-4xl font-serif font-bold text-foreground">{service.title}</h3>
-                <p className="text-lg text-muted-foreground leading-relaxed">{service.description}</p>
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-foreground">{service.title}</h3>
+                <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">{service.description}</p>
                 <a
                   href={service.ctaLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block px-8 py-3 bg-foreground text-background font-medium rounded hover:opacity-90 transition-opacity"
+                  className="inline-block w-full sm:w-auto px-8 py-3 bg-foreground text-background font-medium rounded hover:opacity-90 transition-opacity"
                 >
                   {service.cta}
                 </a>

@@ -16,7 +16,7 @@ export default function Footer() {
                 alt="Rome Fine Finishes"
                 width={200}
                 height={80}
-                className="h-16 w-auto"
+                className="h-14 w-auto sm:h-16"
               />
             </div>
             <p className="text-sm opacity-90">Custom cabinetry, decking, and interior finishing since 2018.</p>
@@ -82,7 +82,7 @@ export default function Footer() {
                 href="https://www.facebook.com/ProjectPartnersDesign"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-14 w-14 items-center justify-center transition-transform hover:scale-105"
+                className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center transition-transform hover:scale-105"
                 aria-label="Facebook"
               >
                 <Image
@@ -90,14 +90,14 @@ export default function Footer() {
                   alt="Facebook logo"
                   width={48}
                   height={48}
-                  className="h-12 w-12 object-contain"
+                  className="h-10 w-10 sm:h-12 sm:w-12 object-contain"
                 />
               </a>
               <a
                 href="https://www.google.com/search?q=Rome+Fine+Finishes+reviews"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-14 w-14 items-center justify-center transition-transform hover:scale-105"
+                className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center transition-transform hover:scale-105"
                 aria-label="Google"
               >
                 <Image
@@ -105,14 +105,14 @@ export default function Footer() {
                   alt="Google logo"
                   width={48}
                   height={48}
-                  className="h-12 w-12 object-contain"
+                  className="h-10 w-10 sm:h-12 sm:w-12 object-contain"
                 />
               </a>
               <a
                 href="https://www.instagram.com/projectpartnersdsn/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-14 w-14 items-center justify-center transition-transform hover:scale-105"
+                className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center transition-transform hover:scale-105"
                 aria-label="Instagram"
               >
                 <Image
@@ -120,7 +120,7 @@ export default function Footer() {
                   alt="Instagram logo"
                   width={48}
                   height={48}
-                  className="h-12 w-12 object-contain"
+                  className="h-10 w-10 sm:h-12 sm:w-12 object-contain"
                 />
               </a>
             </div>
