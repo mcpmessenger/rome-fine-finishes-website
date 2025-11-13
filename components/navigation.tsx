@@ -20,17 +20,14 @@ export default function Navigation({ isDark }: { isDark: boolean }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 group">
+          <Link href="/" className="flex items-center">
             <Image
-              src="/images/main-20logo-1.jpg"
-              alt="Rome Fine Finishes"
+              src="/favicon.svg"
+              alt="Rome Fine Finishes logo"
               width={40}
               height={40}
               className="h-10 w-auto"
             />
-            <span className="font-serif font-bold text-lg hidden sm:inline text-foreground group-hover:text-accent transition-colors">
-              Rome Fine Finishes
-            </span>
           </Link>
 
           {/* Desktop Navigation */}

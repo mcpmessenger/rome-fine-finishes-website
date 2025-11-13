@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { Facebook, Instagram, Phone, Mail } from "lucide-react"
 
 export default function Footer() {
@@ -9,7 +10,15 @@ export default function Footer() {
         <div className="grid md:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <div className="space-y-4">
-            <h3 className="font-serif font-bold text-xl">Rome Fine Finishes</h3>
+            <div className="flex items-center">
+              <Image
+                src="/Untitled design (27).png"
+                alt="Rome Fine Finishes"
+                width={200}
+                height={80}
+                className="h-16 w-auto"
+              />
+            </div>
             <p className="text-sm opacity-90">Custom cabinetry, decking, and interior finishing since 2018.</p>
             <div className="pt-4 space-y-3">
               <a

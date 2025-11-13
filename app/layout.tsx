@@ -21,6 +21,9 @@ export const metadata: Metadata = {
   description:
     "Expert custom cabinetry, outdoor decking, and interior finishing services. Established 2018. Request your appointment today.",
   keywords: "custom cabinetry, decking, interior finishing, home renovation, Iowa",
+  icons: {
+    icon: "/favicon.svg",
+  },
   openGraph: {
     title: "Rome Fine Finishes",
     description: "Custom cabinetry, decking, and interior finishing services",
