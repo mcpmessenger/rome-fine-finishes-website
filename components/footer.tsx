@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { Facebook, Instagram, Phone, Mail } from "lucide-react"
+import { Phone, Mail } from "lucide-react"
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
@@ -82,19 +82,46 @@ export default function Footer() {
                 href="https://www.facebook.com/ProjectPartnersDesign"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-background/20 rounded hover:bg-background/40 transition-colors"
+                className="flex h-12 w-12 items-center justify-center bg-background/20 rounded hover:bg-background/40 transition-colors"
                 aria-label="Facebook"
               >
-                <Facebook size={20} />
+                <Image
+                  src="/social-media-icon-facebook.png"
+                  alt="Facebook logo"
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 object-contain"
+                />
+              </a>
+              <a
+                href="https://www.google.com/search?q=Rome+Fine+Finishes+reviews"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-12 w-12 items-center justify-center bg-background/20 rounded hover:bg-background/40 transition-colors"
+                aria-label="Google"
+              >
+                <Image
+                  src="/social-media-icon-google.png"
+                  alt="Google logo"
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 object-contain"
+                />
               </a>
               <a
                 href="https://www.instagram.com/projectpartnersdsn/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-background/20 rounded hover:bg-background/40 transition-colors"
+                className="flex h-12 w-12 items-center justify-center bg-background/20 rounded hover:bg-background/40 transition-colors"
                 aria-label="Instagram"
               >
-                <Instagram size={20} />
+                <Image
+                  src="/social-media-icon-instagram.png"
+                  alt="Instagram logo"
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 object-contain"
+                />
               </a>
             </div>
           </div>
