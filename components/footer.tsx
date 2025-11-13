@@ -77,50 +77,50 @@ export default function Footer() {
           {/* Social */}
           <div className="space-y-4">
             <h4 className="font-semibold">Follow Us</h4>
-            <div className="flex gap-3">
+            <div className="flex gap-4">
               <a
                 href="https://www.facebook.com/ProjectPartnersDesign"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-12 w-12 items-center justify-center bg-background/20 rounded hover:bg-background/40 transition-colors"
+                className="flex h-14 w-14 items-center justify-center transition-transform hover:scale-105"
                 aria-label="Facebook"
               >
                 <Image
                   src="/social-media-icon-facebook.png"
                   alt="Facebook logo"
-                  width={32}
-                  height={32}
-                  className="h-8 w-8 object-contain"
+                  width={48}
+                  height={48}
+                  className="h-12 w-12 object-contain"
                 />
               </a>
               <a
                 href="https://www.google.com/search?q=Rome+Fine+Finishes+reviews"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-12 w-12 items-center justify-center bg-background/20 rounded hover:bg-background/40 transition-colors"
+                className="flex h-14 w-14 items-center justify-center transition-transform hover:scale-105"
                 aria-label="Google"
               >
                 <Image
                   src="/social-media-icon-google.png"
                   alt="Google logo"
-                  width={32}
-                  height={32}
-                  className="h-8 w-8 object-contain"
+                  width={48}
+                  height={48}
+                  className="h-12 w-12 object-contain"
                 />
               </a>
               <a
                 href="https://www.instagram.com/projectpartnersdsn/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-12 w-12 items-center justify-center bg-background/20 rounded hover:bg-background/40 transition-colors"
+                className="flex h-14 w-14 items-center justify-center transition-transform hover:scale-105"
                 aria-label="Instagram"
               >
                 <Image
                   src="/social-media-icon-instagram.png"
                   alt="Instagram logo"
-                  width={32}
-                  height={32}
-                  className="h-8 w-8 object-contain"
+                  width={48}
+                  height={48}
+                  className="h-12 w-12 object-contain"
                 />
               </a>
             </div>
