@@ -13,30 +13,30 @@ interface ServiceSection {
 const services: ServiceSection[] = [
   {
     id: "cabinetry",
-    title: "Custom Cabinetry",
+    title: "Cabinet Refinishing",
     description:
-      "From floor to ceiling, we've got your home custom cabinetry covered. You can choose from our bespoke designs with premium wood selection and expert finishes. Let our expert craftspeople bring your vision to life.",
-    imageAlt: "Custom cabinetry project",
+      "Refresh the cabinets you already love with meticulous prep, repair, and hand-applied finishes. We handle stripping, sanding, color matching, and durable topcoats that leave every door and drawer looking brand new.",
+    imageAlt: "Cabinet refinishing project",
     cta: "Schedule an Estimate",
     ctaLink: "https://romefinefinishes.dripjobs.com",
     imagePosition: "left",
   },
   {
     id: "decks",
-    title: "Outdoor Decks",
+    title: "Deck Refinishing",
     description:
-      "Create your perfect outdoor living space with our custom deck designs. We specialize in weather-resistant construction, premium materials, and stunning finishes that will last for years. Transform your backyard into an entertainer's paradise.",
-    imageAlt: "Beautiful outdoor deck",
+      "Protect and revive your outdoor gathering space with deep cleaning, repairs, and premium stains. We specialize in weather-resistant coatings, careful sanding, and detail work that restores the warmth and richness of your deck.",
+    imageAlt: "Refinished outdoor deck",
     cta: "Schedule an Estimate",
     ctaLink: "https://romefinefinishes.dripjobs.com",
     imagePosition: "right",
   },
   {
     id: "interiors",
-    title: "Interior Finishing",
+    title: "Interior Fine Finishes",
     description:
-      "Professional painting, textures, and interior finishing work that transforms any space. From subtle finishes to bold statements, our expert team brings your design vision to life with precision and artistry.",
-    imageAlt: "Interior finishing project",
+      "From wall coatings to trim and built-ins, we elevate surfaces with artisan painting, specialty textures, and glazing. Every finish is tailored to complement your décor and bring refined polish to your living spaces.",
+    imageAlt: "Interior refinishing project",
     cta: "Schedule an Estimate",
     ctaLink: "https://romefinefinishes.dripjobs.com",
     imagePosition: "left",

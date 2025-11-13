@@ -18,7 +18,7 @@ export default function Hero() {
           Rediscover the beauty of your home with fine finishes.
         </h1>
         <p className="text-lg md:text-xl mb-8 opacity-95">
-          Expert cabinetry, stunning decks, and refined interior finishing since 2018.
+          Specialists in cabinet refinishing, deck renewal, and detailed interior finishes since 2018.
         </p>
         <a
           href="https://romefinefinishes.dripjobs.com"
