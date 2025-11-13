@@ -22,7 +22,7 @@ export default function Navigation({ isDark }: { isDark: boolean }) {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <Image
-              src="/favicon.svg"
+              src="/Untitled design (27).png"
               alt="Rome Fine Finishes logo"
               width={40}
               height={40}
