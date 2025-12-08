@@ -49,8 +49,8 @@ const services: ServiceSection[] = [
     ctaLink: "https://romefinefinishes.dripjobs.com",
     imagePosition: "left",
     images: getGalleryImages("cabinetry", 8),
-    autoplayDelay: 7000,
-    autoplayOffset: 3000,
+    autoplayDelay: 3500,
+    autoplayOffset: 1500,
   },
   {
     id: "cabinet-refacing",
@@ -62,8 +62,8 @@ const services: ServiceSection[] = [
     ctaLink: "https://romefinefinishes.dripjobs.com",
     imagePosition: "right",
     images: getGalleryImages("cabinetry", 6),
-    autoplayDelay: 7500,
-    autoplayOffset: 3500,
+    autoplayDelay: 3500,
+    autoplayOffset: 1500,
   },
   {
     id: "decks",
@@ -75,8 +75,8 @@ const services: ServiceSection[] = [
     ctaLink: "https://romefinefinishes.dripjobs.com",
     imagePosition: "right",
     images: getGalleryImages("decks", 6),
-    autoplayDelay: 8000,
-    autoplayOffset: 4500,
+    autoplayDelay: 4000,
+    autoplayOffset: 2000,
   },
   {
     id: "interiors",
@@ -88,8 +88,8 @@ const services: ServiceSection[] = [
     ctaLink: "https://romefinefinishes.dripjobs.com",
     imagePosition: "left",
     images: getGalleryImages("interiors", 7),
-    autoplayDelay: 9000,
-    autoplayOffset: 6000,
+    autoplayDelay: 4000,
+    autoplayOffset: 2000,
   },
   {
     id: "furniture-restoration",
@@ -101,8 +101,8 @@ const services: ServiceSection[] = [
     ctaLink: "https://romefinefinishes.dripjobs.com",
     imagePosition: "right",
     images: getGalleryImages("furniture-restoration", 6),
-    autoplayDelay: 8500,
-    autoplayOffset: 5000,
+    autoplayDelay: 4000,
+    autoplayOffset: 2000,
   },
 ]
 
