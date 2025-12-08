@@ -6,6 +6,7 @@ import Hero from "@/components/hero"
 import Introduction from "@/components/introduction"
 import ServiceCards from "@/components/service-cards"
 import Reviews from "@/components/reviews"
+import AboutUs from "@/components/about-us"
 import Footer from "@/components/footer"
 import ThemeToggle from "@/components/theme-toggle"
 
@@ -46,6 +47,7 @@ export default function Home() {
       <Hero />
       <Introduction />
       <ServiceCards />
+      <AboutUs />
       <Reviews />
       <Footer />
       {/* Hidden SEO Keywords Section */}

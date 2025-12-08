@@ -4,7 +4,7 @@ export default function Introduction() {
       <div className="max-w-4xl mx-auto text-center space-y-8">
         <div className="space-y-4">
           <p className="text-lg text-muted-foreground leading-relaxed">
-            We understand the power an expertly crafted space can have on your everyday life. With our skilled team of fine finish specialists and skilled craftsman, your project will be seamless, stress-free and transformative.
+            We understand the power an expertly crafted space can have on your everyday life. With our skilled team of fine finish specialists, your project will be seamless, stress-free and transformative.
           </p>
         </div>
 

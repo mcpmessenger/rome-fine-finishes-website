@@ -9,11 +9,12 @@ export default function Navigation({ isDark }: { isDark: boolean }) {
   const [isOpen, setIsOpen] = useState(false)
 
   const navLinks = [
-    { href: "#cabinet-refacing", label: "Cabinetry" },
+    { href: "#cabinet-refinishing", label: "Cabinetry" },
     { href: "#decks", label: "Decks" },
     { href: "#interiors", label: "Interiors" },
     { href: "#furniture-restoration", label: "Furniture" },
     { href: "#reviews", label: "Reviews" },
+    { href: "#about-us", label: "About Us" },
   ]
 
   return (

@@ -43,7 +43,7 @@ export default function Footer() {
             <h4 className="font-semibold">Services</h4>
             <ul className="space-y-2 text-sm opacity-90">
               <li>
-                <a href="#cabinet-refacing" className="hover:opacity-100 transition-opacity">
+                <a href="#cabinet-refinishing" className="hover:opacity-100 transition-opacity">
                   Cabinetry
                 </a>
               </li>

@@ -40,11 +40,11 @@ const getGalleryImages = (category: GalleryCategory, limit = 6) => {
 
 const services: ServiceSection[] = [
   {
-    id: "cabinet-refacing",
-    title: "Cabinet Refacing",
+    id: "cabinet-refinishing",
+    title: "Cabinet Refinishing",
     description:
-      "Refinish the cabinetry you already love! Whether it's your kitchen, bathroom or built-ins, your home should reflect your personal style. Cabinet refinishing is a cost-effective solution offering a large return without a full remodel. Our cabinet specialists and skilled craftsman will transform your space using high quality finishes, meticulous preparation for superior durability and leave you with a factory finish – flawless finish – all in about 1 week! Every cabinet refinishing project comes with a design & color consultation to ensure an expertly curated space. Looking to add a little more to your cabinet refinishing? Consider refacing your cabinetry with new cabinet door & drawer faces. Refacing can give a dated space a modern and custom look without replacing all your cabinets. This option is great for kitchens with \"good bones\" or clients that want to add a few cabinets to maximize the functionality of their space. Get started today with a free estimate.",
-    imageAlt: "Cabinet refinishing and refacing project",
+      "Refinish the cabinetry you already love! Whether it's your kitchen, bathroom or built-ins, your home should reflect your personal style. Cabinet refinishing is a cost-effective solution offering a large return without a full remodel. Our cabinet specialists will transform your space using high quality finishes, meticulous preparation for superior durability and leave you with a factory like - flawless finish – all in about 1 week! Every cabinet refinishing project comes with a design & color consultation to ensure an expertly curated space. Get started today with a free estimate.",
+    imageAlt: "Cabinet refinishing project",
     cta: "Schedule an Estimate",
     ctaLink: "https://romefinefinishes.dripjobs.com",
     imagePosition: "left",
@@ -53,10 +53,23 @@ const services: ServiceSection[] = [
     autoplayOffset: 3000,
   },
   {
+    id: "cabinet-refacing",
+    title: "Cabinet Refacing",
+    description:
+      "Looking to add a little more to your cabinet refinishing? Consider refacing your cabinetry with new cabinet door & drawer faces. Refacing can give a dated space a modern and custom look without replacing all your cabinets. This option is great for kitchens with \"good bones\" or clients that want to add a few cabinets to maximize the functionality of their space.",
+    imageAlt: "Cabinet refacing project",
+    cta: "Schedule an Estimate",
+    ctaLink: "https://romefinefinishes.dripjobs.com",
+    imagePosition: "right",
+    images: getGalleryImages("cabinetry", 6),
+    autoplayDelay: 7500,
+    autoplayOffset: 3500,
+  },
+  {
     id: "decks",
     title: "Deck Refinishing",
     description:
-      "Protect and revive your outdoor gathering space with deep cleaning, repairs, and premium stains. We specialize in weather-resistant coatings, careful sanding, and detail work that restores the warmth and richness of your deck.",
+      "Enjoy your outdoor space more when you're proud to show it off! Whether your deck is new or seasoned & well loved, our skilled deck technicians can make your outdoor space beautiful. We offer a variety of stain options and endless colors! Got bees or lots of insects? We can also add natural additives that deter carpenter bees and other pesky insects. Have rotten boards on your deck? We can replace those too! Not sure what kind of annual maintenance your deck needs? Our team does annual deck cleaning to lengthen the life of the stain and help keep boards from rotting! The process is typically only a few days, so you'll be back out there in no time!",
     imageAlt: "Refinished outdoor deck",
     cta: "Schedule an Estimate",
     ctaLink: "https://romefinefinishes.dripjobs.com",
@@ -69,7 +82,7 @@ const services: ServiceSection[] = [
     id: "interiors",
     title: "Interior Finishes",
     description:
-      "From floor to door to ceiling, we've got your home's interior painting covered! When it comes to your home, we understand the value in detailed care & attention. Our Paint Specialist uses high quality materials, the newest technology and skills in application methods and treats all projects with the professional craftsmanship your home deserves. Need help choosing the right color? We can do that too! Let our design team help find the perfect color to bring your vision to reality. Get started today by booking your free estimate!",
+      "From floor to door to ceiling, we've got your home's interior painting covered! When it comes to your home, we understand the value in detailed care & attention. Our Paint Specialist use high quality materials, the newest technology and skills in application methods and treat all project with the professional craftsmanship your home deserves. Need help choosing the right color? We can do that too! Let our design team help find the perfect color to bring your vision to reality. Get started today by booking your free estimate!",
     imageAlt: "Interior refinishing project",
     cta: "Schedule an Estimate",
     ctaLink: "https://romefinefinishes.dripjobs.com",
@@ -82,7 +95,7 @@ const services: ServiceSection[] = [
     id: "furniture-restoration",
     title: "Furniture Restoration",
     description:
-      "Give heirloom-quality pieces the respect they deserve. We repair damage, rebuild missing details, and apply hand-crafted, hand-finished coatings that protect daily use while showcasing the natural character of each piece.",
+      "When it comes to furniture, they \"just don't make it like they used to\". Getting that old furniture to look new again and represent your personal style and flare is essential to holding on to that quality piece or adding a new upcycled piece that speaks to your design aesthetic. We specialize in furniture restoration, including paint and stain. So, before you donate, consider refinishing. For those thrifters out there- we've got you covered too! Bring us your treasures and we will make them look extra special.",
     imageAlt: "Furniture restoration project",
     cta: "Revive a Favorite Piece",
     ctaLink: "https://romefinefinishes.dripjobs.com",
