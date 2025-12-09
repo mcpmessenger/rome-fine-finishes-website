@@ -1,7 +1,7 @@
 "use client"
 
-import { useCallback, useState } from "react"
-import { Upload, X, Image as ImageIcon } from "lucide-react"
+import { useCallback, useState, useRef } from "react"
+import { Upload, X, Image as ImageIcon, Camera } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface ImageUploaderProps {
@@ -19,6 +19,8 @@ export default function ImageUploader({
 }: ImageUploaderProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const cameraInputRef = useRef<HTMLInputElement>(null)
 
   const validateFile = (file: File): string | null => {
     if (!acceptedTypes.includes(file.type)) {
@@ -85,6 +87,27 @@ export default function ImageUploader({
     [onImageSelect]
   )
 
+  const handleCameraClick = useCallback(() => {
+    // Trigger camera input
+    if (cameraInputRef.current) {
+      cameraInputRef.current.click()
+    }
+  }, [])
+
+  const handleCameraInput = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0]
+      if (file) {
+        handleFile(file)
+      }
+      // Reset the input so the same file can be selected again
+      if (cameraInputRef.current) {
+        cameraInputRef.current.value = ""
+      }
+    },
+    [handleFile]
+  )
+
   return (
     <div className="w-full">
       <div
@@ -100,12 +123,25 @@ export default function ImageUploader({
           selectedImage && "border-accent bg-accent/5"
         )}
       >
+        {/* Regular file input for gallery/library */}
         <input
+          ref={fileInputRef}
           type="file"
           accept={acceptedTypes.join(",")}
           onChange={handleFileInput}
           className="hidden"
           id="image-upload"
+        />
+        
+        {/* Camera input for mobile devices */}
+        <input
+          ref={cameraInputRef}
+          type="file"
+          accept={acceptedTypes.join(",")}
+          capture="environment"
+          onChange={handleCameraInput}
+          className="hidden"
+          id="camera-capture"
         />
 
         {selectedImage ? (
@@ -132,24 +168,48 @@ export default function ImageUploader({
             </div>
           </div>
         ) : (
-          <label
-            htmlFor="image-upload"
-            className="flex flex-col items-center justify-center cursor-pointer"
-          >
-            <div className="mb-4 p-4 rounded-full bg-muted">
-              {isDragging ? (
-                <Upload className="w-8 h-8 text-accent" />
-              ) : (
-                <ImageIcon className="w-8 h-8 text-muted-foreground" />
-              )}
+          <div className="flex flex-col items-center justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md mx-auto mb-4">
+              {/* Camera button - prominent on mobile */}
+              <button
+                onClick={handleCameraClick}
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-accent text-accent-foreground rounded-lg font-medium hover:opacity-90 transition-opacity"
+                type="button"
+              >
+                <Camera className="w-5 h-5" />
+                <span>Take Photo</span>
+              </button>
+              
+              {/* Upload from gallery button */}
+              <label
+                htmlFor="image-upload"
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-4 border-2 border-border rounded-lg font-medium hover:bg-muted transition-colors cursor-pointer"
+              >
+                <Upload className="w-5 h-5" />
+                <span>Choose File</span>
+              </label>
             </div>
-            <p className="text-lg font-medium mb-2">
-              {isDragging ? "Drop your image here" : "Upload or drag & drop your image"}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              JPG or PNG up to {Math.round(maxSize / 1024 / 1024)}MB
-            </p>
-          </label>
+            
+            {/* Drag and drop area */}
+            <label
+              htmlFor="image-upload"
+              className="flex flex-col items-center justify-center cursor-pointer w-full"
+            >
+              <div className="mb-4 p-4 rounded-full bg-muted">
+                {isDragging ? (
+                  <Upload className="w-8 h-8 text-accent" />
+                ) : (
+                  <ImageIcon className="w-8 h-8 text-muted-foreground" />
+                )}
+              </div>
+              <p className="text-lg font-medium mb-2">
+                {isDragging ? "Drop your image here" : "Or drag & drop your image"}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                JPG or PNG up to {Math.round(maxSize / 1024 / 1024)}MB
+              </p>
+            </label>
+          </div>
         )}
       </div>
 
