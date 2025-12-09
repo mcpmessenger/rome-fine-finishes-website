@@ -19,7 +19,7 @@ export default function Navigation({ isDark }: { isDark: boolean }) {
   ]
 
   return (
-    <nav className="sticky top-0 z-50 bg-white dark:bg-white backdrop-blur border-b border-gray-200 dark:border-gray-300">
+    <nav className="sticky top-0 z-50 bg-white dark:bg-white backdrop-blur border-b-2 border-accent/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 sm:h-20">
           {/* Logo */}
