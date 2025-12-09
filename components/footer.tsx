@@ -114,8 +114,7 @@ export default function Footer() {
 
         {/* Gold shimmer divider */}
         <div className="pt-8">
-          <div className="h-px gold-shimmer"></div>
-        </div>
+          <div className="h-px gold-shimmer mb-8" />
           <div className="flex flex-col sm:flex-row justify-between items-center text-sm opacity-80">
             <p>&copy; {currentYear} Rome Fine Finishes. All rights reserved.</p>
             <p className="mt-4 sm:mt-0">Crafted with excellence in Iowa</p>
