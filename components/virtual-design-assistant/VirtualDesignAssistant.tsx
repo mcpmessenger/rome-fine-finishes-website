@@ -14,6 +14,7 @@ export default function VirtualDesignAssistant() {
   const [transformedMimeType, setTransformedMimeType] = useState<string>("image/png")
   const [isTransforming, setIsTransforming] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [customDirections, setCustomDirections] = useState<string>("")
   const transformingRef = useRef(false)
   const lastTransformRef = useRef<string>("")
 
@@ -22,11 +23,12 @@ export default function VirtualDesignAssistant() {
     setDetectedSurface(null)
     setTransformedImage(null)
     setError(null)
+    setCustomDirections("")
     transformingRef.current = false
     lastTransformRef.current = ""
   }
 
-  const handleTransform = useCallback(async (surfaceType: SurfaceType) => {
+  const handleTransform = useCallback(async (surfaceType: SurfaceType, directions?: string) => {
     if (!selectedImage || !surfaceType) return
 
     // Prevent duplicate calls
@@ -35,9 +37,10 @@ export default function VirtualDesignAssistant() {
       return
     }
 
-    const transformKey = `${selectedImage.name}-${surfaceType}`
+    const directionsToUse = directions || customDirections
+    const transformKey = `${selectedImage.name}-${surfaceType}-${directionsToUse}`
     if (lastTransformRef.current === transformKey && transformedImage) {
-      console.log("Transformation already completed for this image/surface, skipping...")
+      console.log("Transformation already completed for this image/surface/directions, skipping...")
       return
     }
 
@@ -50,6 +53,9 @@ export default function VirtualDesignAssistant() {
       const formData = new FormData()
       formData.append("image", selectedImage)
       formData.append("surfaceType", surfaceType)
+      if (directionsToUse.trim()) {
+        formData.append("customDirections", directionsToUse.trim())
+      }
 
       const response = await fetch("/api/transform-image", {
         method: "POST",
@@ -85,21 +91,22 @@ export default function VirtualDesignAssistant() {
 
   const handleSurfaceDetected = useCallback((surfaceType: SurfaceType) => {
     setDetectedSurface(surfaceType)
-    // Auto-trigger transformation when surface is detected (only once)
-    if (surfaceType && selectedImage && !transformingRef.current) {
-      const transformKey = `${selectedImage.name}-${surfaceType}`
-      if (lastTransformRef.current !== transformKey) {
-        lastTransformRef.current = transformKey
-        handleTransform(surfaceType)
-      }
-    }
-  }, [selectedImage, handleTransform])
+    // Don't auto-trigger - always wait for user to click "Transform Image" button
+    // This gives them time to enter custom directions if they want
+  }, [])
 
   const handleReset = () => {
     setSelectedImage(null)
     setDetectedSurface(null)
     setTransformedImage(null)
     setError(null)
+    setCustomDirections("")
+  }
+
+  const handleTransformWithDirections = () => {
+    if (detectedSurface) {
+      handleTransform(detectedSurface, customDirections)
+    }
   }
 
   return (
@@ -131,14 +138,40 @@ export default function VirtualDesignAssistant() {
           </div>
 
           {selectedImage && (
-            <div>
-              <h2 className="text-2xl font-serif font-bold mb-4">Step 2: Surface Detection</h2>
-              <SurfaceTypeDetector
-                image={selectedImage}
-                onSurfaceDetected={handleSurfaceDetected}
-                onError={(err) => setError(err)}
-              />
-            </div>
+            <>
+              <div>
+                <h2 className="text-2xl font-serif font-bold mb-4">Step 2: Surface Detection</h2>
+                <SurfaceTypeDetector
+                  image={selectedImage}
+                  onSurfaceDetected={handleSurfaceDetected}
+                  onError={(err) => setError(err)}
+                />
+              </div>
+
+              {detectedSurface && (
+                <div>
+                  <h2 className="text-2xl font-serif font-bold mb-4">Step 3: Custom Directions (Optional)</h2>
+                  <div className="space-y-3">
+                    <textarea
+                      value={customDirections}
+                      onChange={(e) => setCustomDirections(e.target.value)}
+                      placeholder="e.g., make the cabinets red, change the fireplace to white marble, paint the deck dark brown..."
+                      className="w-full min-h-[100px] px-4 py-3 border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent resize-y"
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      Add specific instructions for how you'd like your space transformed. Leave empty to use default transformation.
+                    </p>
+                    <button
+                      onClick={handleTransformWithDirections}
+                      disabled={isTransforming || !detectedSurface}
+                      className="w-full px-6 py-3 bg-accent text-accent-foreground rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isTransforming ? "Transforming..." : "Transform Image"}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           {error && (
@@ -187,10 +220,14 @@ export default function VirtualDesignAssistant() {
           </li>
           <li className="flex gap-3">
             <span className="font-semibold text-foreground">3.</span>
-            <span>See a professional transformation visualization</span>
+            <span>Optionally add custom directions (e.g., "make the cabinets red" or "paint the deck dark brown")</span>
           </li>
           <li className="flex gap-3">
             <span className="font-semibold text-foreground">4.</span>
+            <span>See a professional transformation visualization</span>
+          </li>
+          <li className="flex gap-3">
+            <span className="font-semibold text-foreground">5.</span>
             <span>Schedule a consultation to bring your vision to life</span>
           </li>
         </ol>

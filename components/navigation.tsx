@@ -15,10 +15,11 @@ export default function Navigation({ isDark }: { isDark: boolean }) {
     { href: "#furniture-restoration", label: "Furniture" },
     { href: "#reviews", label: "Reviews" },
     { href: "#about-us", label: "About Us" },
+    { href: "/virtual-design-assistant", label: "Preview" },
   ]
 
   return (
-    <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
+    <nav className="sticky top-0 z-50 bg-white dark:bg-white backdrop-blur border-b border-gray-200 dark:border-gray-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 sm:h-20">
           {/* Logo */}
@@ -39,7 +40,7 @@ export default function Navigation({ isDark }: { isDark: boolean }) {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-foreground hover:text-accent transition-colors text-sm font-medium"
+                  className="text-gray-900 dark:text-gray-900 hover:text-accent transition-colors text-sm font-medium"
                 >
                   {link.label}
                 </Link>
@@ -47,7 +48,7 @@ export default function Navigation({ isDark }: { isDark: boolean }) {
                 <a
                   key={link.href}
                   href={link.href}
-                  className="text-foreground hover:text-accent transition-colors text-sm font-medium"
+                  className="text-gray-900 dark:text-gray-900 hover:text-accent transition-colors text-sm font-medium"
                 >
                   {link.label}
                 </a>
@@ -60,13 +61,13 @@ export default function Navigation({ isDark }: { isDark: boolean }) {
             href="https://romefinefinishes.dripjobs.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden sm:block px-6 py-2 bg-foreground text-background rounded font-medium hover:opacity-90 transition-opacity"
+            className="hidden sm:block px-6 py-2 bg-gray-900 dark:bg-gray-900 text-white rounded font-medium hover:opacity-90 transition-opacity"
           >
             Schedule Estimate
           </a>
 
           {/* Mobile Menu Button */}
-          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden p-2 hover:bg-muted rounded transition-colors">
+          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-100 rounded transition-colors text-gray-900 dark:text-gray-900">
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
@@ -79,7 +80,7 @@ export default function Navigation({ isDark }: { isDark: boolean }) {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="block px-4 py-2 text-foreground hover:bg-muted rounded transition-colors"
+                  className="block px-4 py-2 text-gray-900 dark:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-100 rounded transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   {link.label}
@@ -88,7 +89,7 @@ export default function Navigation({ isDark }: { isDark: boolean }) {
                 <a
                   key={link.href}
                   href={link.href}
-                  className="block px-4 py-2 text-foreground hover:bg-muted rounded transition-colors"
+                  className="block px-4 py-2 text-gray-900 dark:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-100 rounded transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   {link.label}
@@ -99,7 +100,7 @@ export default function Navigation({ isDark }: { isDark: boolean }) {
               href="https://romefinefinishes.dripjobs.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="block px-4 py-2 bg-foreground text-background rounded font-medium hover:opacity-90 transition-opacity"
+              className="block px-4 py-2 bg-gray-900 dark:bg-gray-900 text-white rounded font-medium hover:opacity-90 transition-opacity"
             >
               Schedule Estimate
             </a>
