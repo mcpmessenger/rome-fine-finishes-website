@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react"
 
 export default function LoadingScreen({ onComplete }: { onComplete: () => void }) {
   const [isVisible, setIsVisible] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
 
   const handleComplete = useCallback(() => {
@@ -20,6 +21,33 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
   }, [onComplete])
 
   useEffect(() => {
+    // Detect mobile device
+    const checkMobile = () => {
+      // Check window width (mobile is typically < 768px)
+      const widthCheck = window.innerWidth < 768
+      // Check user agent for mobile devices
+      const userAgentCheck = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      )
+      setIsMobile(widthCheck || userAgentCheck)
+    }
+
+    // Initial check
+    checkMobile()
+
+    // Listen for resize events
+    const handleResize = () => {
+      checkMobile()
+    }
+
+    window.addEventListener("resize", handleResize)
+
+    return () => {
+      window.removeEventListener("resize", handleResize)
+    }
+  }, [])
+
+  useEffect(() => {
     // Show loading screen on:
     // 1. Initial page load
     // 2. Page refresh (F5, Ctrl+R, browser refresh)
@@ -27,9 +55,18 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
     
     setIsVisible(true)
     
-    // Try to play the video once it's ready
+    // Update video source based on device type
     const video = videoRef.current
     if (video) {
+      const newSrc = isMobile ? "/download.mp4" : "/loading-video.mp4"
+      // Check if we need to update the source
+      const currentSrc = video.getAttribute("src")
+      if (currentSrc !== newSrc) {
+        video.src = newSrc
+        video.load() // Reload the video with the new source
+      }
+      
+      // Try to play the video once it's ready
       const tryPlay = () => {
         const playPromise = video.play()
         if (playPromise !== undefined) {
@@ -56,7 +93,7 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
         }, { once: true })
       }
     }
-  }, [handleComplete])
+  }, [handleComplete, isMobile])
 
   const handleVideoEnd = useCallback(() => {
     handleComplete()
@@ -73,7 +110,7 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
       <div className="absolute inset-0 flex items-center justify-center">
         <video
           ref={videoRef}
-          src="/loading-video.mp4"
+          src={isMobile ? "/download.mp4" : "/loading-video.mp4"}
           className="w-full h-full object-cover"
           muted
           playsInline
@@ -87,4 +124,3 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
     </div>
   )
 }
-
