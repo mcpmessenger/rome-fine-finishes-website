@@ -18,7 +18,7 @@ export default function Hero() {
       <div className="relative z-10 text-center px-6 sm:px-4 max-w-5xl flex flex-col items-center">
         {/* Main Hero Title */}
         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-6 text-white drop-shadow-lg">
-          Rediscover the Beauty of YOUR Home with Our Custom Paint & Stain Finishes
+          Rediscover YOUR home
         </h1>
         <p className="text-base sm:text-lg md:text-xl opacity-95 text-white">
           Specialists in Custom Cabinet Refinishing, Deck Renewal, Cabinet Refacing & Detailed Interior Finishes. – Proudly Serving the Des Moines Metro since 2018

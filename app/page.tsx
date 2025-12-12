@@ -9,10 +9,12 @@ import Reviews from "@/components/reviews"
 import AboutUs from "@/components/about-us"
 import Footer from "@/components/footer"
 import ThemeToggle from "@/components/theme-toggle"
+import LoadingScreen from "@/components/loading-screen"
 
 export default function Home() {
   const [isDark, setIsDark] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [showContent, setShowContent] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -41,21 +43,28 @@ export default function Home() {
   if (!mounted) return null
 
   return (
-    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
-      <Navigation isDark={isDark} />
-      <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
-      <Hero />
-      <Introduction />
-      <ServiceCards />
-      <AboutUs />
-      <Reviews />
-      <Footer />
-      {/* Hidden SEO Keywords Section */}
-      <div className="sr-only" aria-hidden="true">
-        <p>
-          Paint Specialists, Skilled Craftsman, Hand Crafted, Factory Finish, Flawless Finish, Curated Space, Paint, Painting, Painter, Paint Lady, Paint Guy, The Paint Lady, The Paint Guy, Cabinets, Cabinet Painting, Cabinet Finishing, Cabinet Refinishing, Cabinet Refacing, Refacing, Cabinet Paint, Cabinet Painter, Paint for Cabinets, Painting on Cabinets, Painted Cabinets, White Cabinets, Black Cabinets, Stained Cabinets, Cabinet Colors, Cabinet Design, Kitchen Cabinets, Bathroom Cabinets, Built in cabinets, Fireplace Cabinets, Oak Cabinets, Maple Cabinets, Interior painting, Wall painting, Ceiling painting, Trim painting, Door painting, Interior door painting, Interior wall painting, Front door painting, Exterior door painting, Crown molding painting, Wall Painter, Ceiling Painter, Trim Painter, Door Painter, Interior Painter, Exterior Painter
-        </p>
-      </div>
-    </div>
+    <>
+      {!showContent && (
+        <LoadingScreen onComplete={() => setShowContent(true)} />
+      )}
+      {showContent && (
+        <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+          <Navigation isDark={isDark} />
+          <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
+          <Hero />
+          <Introduction />
+          <ServiceCards />
+          <AboutUs />
+          <Reviews />
+          <Footer />
+          {/* Hidden SEO Keywords Section */}
+          <div className="sr-only" aria-hidden="true">
+            <p>
+              Paint Specialists, Skilled Craftsman, Hand Crafted, Factory Finish, Flawless Finish, Curated Space, Paint, Painting, Painter, Paint Lady, Paint Guy, The Paint Lady, The Paint Guy, Cabinets, Cabinet Painting, Cabinet Finishing, Cabinet Refinishing, Cabinet Refacing, Refacing, Cabinet Paint, Cabinet Painter, Paint for Cabinets, Painting on Cabinets, Painted Cabinets, White Cabinets, Black Cabinets, Stained Cabinets, Cabinet Colors, Cabinet Design, Kitchen Cabinets, Bathroom Cabinets, Built in cabinets, Fireplace Cabinets, Oak Cabinets, Maple Cabinets, Interior painting, Wall painting, Ceiling painting, Trim painting, Door painting, Interior door painting, Interior wall painting, Front door painting, Exterior door painting, Crown molding painting, Wall Painter, Ceiling Painter, Trim Painter, Door Painter, Interior Painter, Exterior Painter
+            </p>
+          </div>
+        </div>
+      )}
+    </>
   )
 }

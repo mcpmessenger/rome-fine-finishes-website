@@ -6,6 +6,7 @@ import useEmblaCarousel from "embla-carousel-react"
 
 import galleryDataJson from "@/data/megan-gallery.json"
 import { cn } from "@/lib/utils"
+import GoldLine from "@/components/gold-line"
 
 interface ServiceSection {
   id: string
@@ -192,7 +193,8 @@ export default function ServiceCards() {
 
         <div className="space-y-24">
           {services.map((service, idx) => (
-            <div key={service.id} id={service.id} className="grid md:grid-cols-2 gap-12 items-center">
+            <div key={service.id} id={service.id} className="space-y-12">
+              <div className="grid md:grid-cols-2 gap-12 items-center">
               {/* Image - Left or Right */}
               <div className={`${service.imagePosition === "right" ? "md:order-2" : "md:order-1"}`}>
                 <ServiceGallery
@@ -216,6 +218,9 @@ export default function ServiceCards() {
                   {service.cta}
                 </a>
               </div>
+              </div>
+              {/* Gold line separator */}
+              <GoldLine className="mt-8" />
             </div>
           ))}
         </div>

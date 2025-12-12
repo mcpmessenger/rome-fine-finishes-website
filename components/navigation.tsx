@@ -2,11 +2,13 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Menu, X } from "lucide-react"
 import Image from "next/image"
 
 export default function Navigation({ isDark }: { isDark: boolean }) {
   const [isOpen, setIsOpen] = useState(false)
+  const pathname = usePathname()
 
   const navLinks = [
     { href: "#cabinet-refinishing", label: "Cabinetry" },
@@ -16,7 +18,17 @@ export default function Navigation({ isDark }: { isDark: boolean }) {
     { href: "#reviews", label: "Reviews" },
     { href: "#about-us", label: "About Us" },
     { href: "/virtual-design-assistant", label: "Preview" },
+    { href: "/documents", label: "Documents" },
   ]
+
+  // Helper function to get the correct href for navigation
+  const getNavHref = (href: string) => {
+    // If it's a hash link and we're not on the homepage, navigate to homepage with hash
+    if (href.startsWith("#") && pathname !== "/") {
+      return `/${href}`
+    }
+    return href
+  }
 
   return (
     <nav className="sticky top-0 z-50 bg-white dark:bg-white backdrop-blur border-b-2 border-accent/30">
@@ -35,25 +47,27 @@ export default function Navigation({ isDark }: { isDark: boolean }) {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex gap-8">
-            {navLinks.map((link) => (
-              link.href.startsWith("/") ? (
+            {navLinks.map((link) => {
+              const href = getNavHref(link.href)
+              return link.href.startsWith("/") || (link.href.startsWith("#") && pathname !== "/") ? (
                 <Link
                   key={link.href}
-                  href={link.href}
+                  href={href}
                   className="text-gray-900 dark:text-gray-900 hover:text-accent transition-colors text-sm font-medium"
+                  scroll={link.href.startsWith("#")}
                 >
                   {link.label}
                 </Link>
               ) : (
                 <a
                   key={link.href}
-                  href={link.href}
+                  href={href}
                   className="text-gray-900 dark:text-gray-900 hover:text-accent transition-colors text-sm font-medium"
                 >
                   {link.label}
                 </a>
               )
-            ))}
+            })}
           </div>
 
           {/* CTA Button */}
@@ -75,27 +89,29 @@ export default function Navigation({ isDark }: { isDark: boolean }) {
         {/* Mobile Navigation */}
         {isOpen && (
           <div className="md:hidden pb-4 space-y-2 animate-in fade-in slide-in-from-top-2">
-            {navLinks.map((link) => (
-              link.href.startsWith("/") ? (
+            {navLinks.map((link) => {
+              const href = getNavHref(link.href)
+              return link.href.startsWith("/") || (link.href.startsWith("#") && pathname !== "/") ? (
                 <Link
                   key={link.href}
-                  href={link.href}
+                  href={href}
                   className="block px-4 py-2 text-gray-900 dark:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-100 rounded transition-colors"
                   onClick={() => setIsOpen(false)}
+                  scroll={link.href.startsWith("#")}
                 >
                   {link.label}
                 </Link>
               ) : (
                 <a
                   key={link.href}
-                  href={link.href}
+                  href={href}
                   className="block px-4 py-2 text-gray-900 dark:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-100 rounded transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   {link.label}
                 </a>
               )
-            ))}
+            })}
             <a
               href="https://romefinefinishes.dripjobs.com"
               target="_blank"
