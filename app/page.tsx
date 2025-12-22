@@ -54,8 +54,8 @@ export default function Home() {
           <Hero />
           <Introduction />
           <ServiceCards />
-          <AboutUs />
           <Reviews />
+          <AboutUs />
           <Footer />
           {/* Hidden SEO Keywords Section */}
           <div className="sr-only" aria-hidden="true">
