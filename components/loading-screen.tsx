@@ -58,7 +58,7 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
     // Update video source based on device type
     const video = videoRef.current
     if (video) {
-      const newSrc = isMobile ? "/download.mp4" : "/loading-video.mp4"
+      const newSrc = isMobile ? "/download.mp4" : "/Untitled video - Made with Clipchamp.mp4"
       // Check if we need to update the source
       const currentSrc = video.getAttribute("src")
       if (currentSrc !== newSrc) {
@@ -110,7 +110,7 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
       <div className="absolute inset-0 flex items-center justify-center">
         <video
           ref={videoRef}
-          src={isMobile ? "/download.mp4" : "/loading-video.mp4"}
+          src={isMobile ? "/download.mp4" : "/Untitled video - Made with Clipchamp.mp4"}
           className="w-full h-full object-cover"
           muted
           playsInline

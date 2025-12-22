@@ -39,6 +39,48 @@ const getGalleryImages = (category: GalleryCategory, limit = 6) => {
   return limit > 0 ? files.slice(0, limit) : files
 }
 
+const getCabinetRefacingImages = (limit = 6) => {
+  const cabinetRefacingImages = [
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0342.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0343.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0507.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0510.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0540.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0577.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0605.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0637.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0664.JPEG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0722.JPEG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0874.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0953.JPEG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_1245.JPEG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_1369.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_1598.JPEG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_1814.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_2098.JPEG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_2336.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_2500.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_3265.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_3591.JPEG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_3604.JPEG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_3638.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_3644.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_5448.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_6334.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_6621.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_6704.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_6820.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_6886.JPEG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_7584.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_7785.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_7786.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_7788.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_7985.JPG",
+    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_8179.JPG",
+  ]
+  return limit > 0 ? cabinetRefacingImages.slice(0, limit) : cabinetRefacingImages
+}
+
 const services: ServiceSection[] = [
   {
     id: "cabinet-refinishing",
@@ -62,7 +104,7 @@ const services: ServiceSection[] = [
     cta: "Schedule an Estimate",
     ctaLink: "https://romefinefinishes.dripjobs.com",
     imagePosition: "right",
-    images: getGalleryImages("cabinetry", 6),
+    images: getCabinetRefacingImages(6),
     autoplayDelay: 3500,
     autoplayOffset: 1500,
   },
