@@ -19,113 +19,106 @@ interface ServiceSection {
   autoplayOffset: number
 }
 
-// Helper function to get images from DEPLOY folders
-// These functions automatically include all images from the respective folders
-const getCabinetRefacingImages = (limit = 0) => {
-  const images = [
-    "/DEPLOY-cabinet-refacing/01979e11-9f9d-711e-8dd4-0cd0c23eae1a.JPG",
-    "/DEPLOY-cabinet-refacing/IMG_0719.JPG",
-    "/DEPLOY-cabinet-refacing/IMG_0721.JPG",
-    "/DEPLOY-cabinet-refacing/IMG_0722.JPG",
-    "/DEPLOY-cabinet-refacing/IMG_0973.JPG",
-    "/DEPLOY-cabinet-refacing/IMG_1244.JPG",
-    "/DEPLOY-cabinet-refacing/IMG_3636.JPG",
-    "/DEPLOY-cabinet-refacing/IMG_6866.JPG",
-    "/DEPLOY-cabinet-refacing/IMG_7040.JPG",
-  ]
-  return limit > 0 ? images.slice(0, limit) : images
-}
+const fallbackCabinetRefacingImages = [
+  "/DEPLOY-cabinet-refacing/01979e11-9f9d-711e-8dd4-0cd0c23eae1a.JPG",
+  "/DEPLOY-cabinet-refacing/IMG_0719.JPG",
+  "/DEPLOY-cabinet-refacing/IMG_0721.JPG",
+  "/DEPLOY-cabinet-refacing/IMG_0722.JPG",
+  "/DEPLOY-cabinet-refacing/IMG_0973.JPG",
+  "/DEPLOY-cabinet-refacing/IMG_1244.JPG",
+  "/DEPLOY-cabinet-refacing/IMG_3636.JPG",
+  "/DEPLOY-cabinet-refacing/IMG_6866.JPG",
+  "/DEPLOY-cabinet-refacing/IMG_7040.JPG",
+]
 
-const getCabinetRefinishingImages = (limit = 0) => {
-  const images = [
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0342.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0343.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0507.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0508.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0509.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0510.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0512.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0513.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0514.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0540.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0577.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0605.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0637.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0664.JPEG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0722.JPEG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0726.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0746.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0874.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0953.JPEG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_1245.JPEG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_1369.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_1598.JPEG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_1814.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_2098.JPEG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_2336.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_2500.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3265.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3591.JPEG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3604.JPEG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3638.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3644.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_5448.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6334.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6621.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6704.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6820.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6886.JPEG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7584.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7785.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7786.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7788.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7985.JPG",
-    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_8179.JPG",
-  ]
-  return limit > 0 ? images.slice(0, limit) : images
-}
+const fallbackCabinetRefinishingImages = [
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0342.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0343.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0507.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0508.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0509.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0510.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0512.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0513.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0514.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0540.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0577.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0605.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0637.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0664.JPEG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0722.JPEG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0726.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0746.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0874.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0953.JPEG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_1245.JPEG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_1369.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_1598.JPEG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_1814.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_2098.JPEG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_2336.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_2500.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3265.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3591.JPEG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3604.JPEG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3638.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3644.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_5448.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6334.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6621.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6704.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6820.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6886.JPEG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7584.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7785.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7786.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7788.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7985.JPG",
+  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_8179.JPG",
+]
 
-const getDecksImages = (limit = 0) => {
-  const images = [
-    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_0974.JPG",
-    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_0982.JPG",
-    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_0988.JPG",
-    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_2697.JPG",
-    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_2711.JPEG",
-    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_2978.JPG",
-    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_3064.JPG",
-    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_3239.JPG",
-    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5621.JPG",
-    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5651.JPG",
-    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5652.JPG",
-    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5833.JPG",
-    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5890.JPG",
-    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_7791.JPG",
-    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_7794.JPG",
-  ]
-  return limit > 0 ? images.slice(0, limit) : images
-}
+const fallbackDeckImages = [
+  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_0974.JPG",
+  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_0982.JPG",
+  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_0988.JPG",
+  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_2697.JPG",
+  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_2711.JPEG",
+  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_2978.JPG",
+  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_3064.JPG",
+  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_3239.JPG",
+  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5621.JPG",
+  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5651.JPG",
+  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5652.JPG",
+  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5833.JPG",
+  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5890.JPG",
+  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_7791.JPG",
+  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_7794.JPG",
+]
 
-const getFurnitureRestorationImages = (limit = 0) => {
-  const images = [
-    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_0685.JPG",
-    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_2956.JPEG",
-    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_3341.JPG",
-    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_3454.JPG",
-    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_4867.JPEG",
-    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_6363.JPEG",
-    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_6615.JPG",
-    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_6673.JPEG",
-    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_6698.JPG",
-    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7511.JPG",
-    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7512.JPG",
-    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7556.JPG",
-    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7560.JPG",
-    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7702.JPG",
-    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7988.JPEG",
-    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_8005.JPG",
-  ]
-  return limit > 0 ? images.slice(0, limit) : images
+const fallbackFurnitureRestorationImages = [
+  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_0685.JPG",
+  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_2956.JPEG",
+  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_3341.JPG",
+  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_3454.JPG",
+  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_4867.JPEG",
+  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_6363.JPEG",
+  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_6615.JPG",
+  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_6673.JPEG",
+  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_6698.JPG",
+  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7511.JPG",
+  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7512.JPG",
+  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7556.JPG",
+  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7560.JPG",
+  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7702.JPG",
+  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7988.JPEG",
+  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_8005.JPG",
+]
+
+const fallbackServiceImages: Record<string, string[]> = {
+  "cabinet-refacing": fallbackCabinetRefacingImages,
+  "cabinet-refinishing": fallbackCabinetRefinishingImages,
+  decks: fallbackDeckImages,
+  "furniture-restoration": fallbackFurnitureRestorationImages,
 }
 
 const services: ServiceSection[] = [
@@ -235,48 +228,71 @@ function ServiceGallery({
   return (
     <div ref={emblaRef} className="group relative overflow-hidden rounded-lg shadow-lg">
       <div className="flex">
-        {images.map((src, idx) => (
-          <div key={src} className="relative shrink-0 grow-0 basis-full h-64 sm:h-80 md:h-[500px]">
-            <Image
-              src={src}
-              alt={`${imageAlt} slide ${idx + 1}`}
-              fill
-              className={cn(
-                "object-cover transition-transform duration-[4000ms] ease-out",
-                selectedIndex === idx ? "scale-105" : "scale-100"
-              )}
-              sizes="(max-width: 768px) 100vw, 600px"
-              priority={idx === 0}
-            />
-          </div>
-        ))}
+        {images.map((src, idx) => {
+          const sanitizedSrc = encodeURI(src)
+          return (
+            <div key={src} className="relative shrink-0 grow-0 basis-full h-64 sm:h-80 md:h-[500px]">
+              <Image
+                src={sanitizedSrc}
+                alt={`${imageAlt} slide ${idx + 1}`}
+                fill
+                className={cn(
+                  "object-cover transition-transform duration-[4000ms] ease-out",
+                  selectedIndex === idx ? "scale-105" : "scale-100"
+                )}
+                sizes="(max-width: 768px) 100vw, 600px"
+                priority={idx === 0}
+              />
+            </div>
+          )
+        })}
       </div>
     </div>
   )
 }
 
 export default function ServiceCards() {
-  // Use static image lists - these will automatically include all images from DEPLOY folders
-  // When new images are added to DEPLOY folders, update these lists
-  const getServiceImages = (serviceId: string, limit: number) => {
-    let images: string[] = []
-    switch (serviceId) {
-      case "cabinet-refinishing":
-        images = getCabinetRefinishingImages()
-        break
-      case "cabinet-refacing":
-        images = getCabinetRefacingImages()
-        break
-      case "decks":
-        images = getDecksImages()
-        break
-      case "furniture-restoration":
-        images = getFurnitureRestorationImages()
-        break
-      default:
-        images = ["/placeholder.svg"]
+  const [serviceImages, setServiceImages] = useState<Record<string, string[]>>(fallbackServiceImages)
+
+  useEffect(() => {
+    let isMounted = true
+
+    fetch("/api/deploy-images")
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Failed to load DEPLOY images")
+        }
+        return res.json()
+      })
+      .then((data) => {
+        if (!isMounted || !data?.imagesByService) {
+          return
+        }
+
+        setServiceImages((prev) => {
+          const updated = { ...prev }
+
+          Object.entries(data.imagesByService).forEach(([serviceId, images]) => {
+            if (images?.length) {
+              updated[serviceId] = images
+            }
+          })
+
+          return updated
+        })
+      })
+      .catch(() => {
+        // Ignore API errors: fall back to the static list already set in state.
+      })
+
+    return () => {
+      isMounted = false
     }
-    return limit > 0 ? images.slice(0, limit) : images
+  }, [])
+
+  const getServiceImages = (serviceId: string) => {
+    const images = serviceImages[serviceId]
+    return images && images.length > 0 ? images : ["/placeholder.svg"]
   }
 
   return (
@@ -288,9 +304,7 @@ export default function ServiceCards() {
 
         <div className="space-y-24">
           {services.map((service, idx) => {
-            // Get images based on service ID
-            const imageLimit = service.id === "cabinet-refinishing" ? 8 : 6
-            const displayImages = getServiceImages(service.id, imageLimit)
+            const displayImages = getServiceImages(service.id)
 
             return (
               <div key={service.id} id={service.id} className="space-y-12">
