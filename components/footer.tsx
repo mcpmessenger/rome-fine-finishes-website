@@ -53,8 +53,8 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#interiors" className="hover:opacity-100 transition-opacity">
-                  Interior Finishing
+                <a href="#furniture-restoration" className="hover:opacity-100 transition-opacity">
+                  Furniture Restoration
                 </a>
               </li>
             </ul>

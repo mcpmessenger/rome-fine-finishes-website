@@ -13,7 +13,6 @@ export default function Navigation({ isDark }: { isDark: boolean }) {
   const navLinks = [
     { href: "#cabinet-refinishing", label: "Cabinetry" },
     { href: "#decks", label: "Decks" },
-    { href: "#interiors", label: "Interiors" },
     { href: "#furniture-restoration", label: "Furniture" },
     { href: "#reviews", label: "Reviews" },
     { href: "#about-us", label: "About Us" },

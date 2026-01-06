@@ -166,18 +166,6 @@ const services: ServiceSection[] = [
     autoplayOffset: 2000,
   },
   {
-    id: "interiors",
-    title: "Interior Finishes",
-    description:
-      "From floor to door to ceiling, we've got your home's interior painting covered! When it comes to your home, we understand the value in detailed care & attention. Our Paint Specialist use high quality materials, the newest technology and skills in application methods and treat all project with the professional craftsmanship your home deserves. Need help choosing the right color? We can do that too! Let our design team help find the perfect color to bring your vision to reality. Get started today by booking your free estimate!",
-    imageAlt: "Interior refinishing project",
-    cta: "Schedule an Estimate",
-    ctaLink: "https://romefinefinishes.dripjobs.com",
-    imagePosition: "left",
-    autoplayDelay: 4000,
-    autoplayOffset: 2000,
-  },
-  {
     id: "furniture-restoration",
     title: "Furniture Restoration",
     description:
@@ -284,10 +272,6 @@ export default function ServiceCards() {
         break
       case "furniture-restoration":
         images = getFurnitureRestorationImages()
-        break
-      case "interiors":
-        // Interiors doesn't have a DEPLOY folder, use placeholder
-        images = ["/placeholder.svg"]
         break
       default:
         images = ["/placeholder.svg"]
