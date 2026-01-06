@@ -37,7 +37,14 @@ const reviews: Review[] = [
     id: 4,
     author: "Elizabeth Hailey Hansen",
     rating: 5,
-    text: "Project Partners Design of Ankeny are responsive, thorough and accommodating. They worked around the weather to stain our deck. I think we have even become friends with them. Hard working and meticulous. Would highly recommend them to everyone. They even came back this morning to bid another project.",
+    text: "Project Partners Design (507-382-7050) of Ankeny are responsive, thorough and accommodating. They worked around the weather to stain our deck. I think we have even become friends with them. Hard working and meticulous. Would highly recommend them to everyone. They even came back this morning to bid another project.",
+    platform: "facebook",
+  },
+  {
+    id: 7,
+    author: "Project Partners Design",
+    rating: 5,
+    text: "Absolutely loved working for you!! Your home is beautiful!! Thank you for allowing us to be a part of its remodel.",
     platform: "facebook",
   },
   {
