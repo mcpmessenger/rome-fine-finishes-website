@@ -17,7 +17,7 @@ export default function Navigation({ isDark }: { isDark: boolean }) {
     { href: "#furniture-restoration", label: "Furniture" },
     { href: "#reviews", label: "Reviews" },
     { href: "#about-us", label: "About Us" },
-    { href: "/virtual-design-assistant", label: "Preview" },
+    { href: "/virtual-design-assistant", label: "Virtual Color Assistant" },
   ]
 
   // Helper function to get the correct href for navigation

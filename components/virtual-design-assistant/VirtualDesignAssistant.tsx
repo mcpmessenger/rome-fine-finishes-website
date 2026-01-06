@@ -116,7 +116,7 @@ export default function VirtualDesignAssistant() {
         <div className="flex items-center justify-center gap-2">
           <Sparkles className="w-8 h-8 text-accent" />
           <h1 className="text-4xl md:text-5xl font-serif font-bold">
-            Virtual Design Assistant
+            Virtual Color Assistant
           </h1>
         </div>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -189,7 +189,7 @@ export default function VirtualDesignAssistant() {
         <div className="space-y-6">
           <div>
             <h2 className="text-2xl font-serif font-bold mb-4">
-              {transformedImage ? "Your Transformation" : "Preview"}
+              {transformedImage ? "Your Transformation" : "Virtual Color Assistant"}
             </h2>
             <TransformationViewer
               originalImage={selectedImage}
