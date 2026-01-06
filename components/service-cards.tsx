@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import useEmblaCarousel from "embla-carousel-react"
 
-import galleryDataJson from "@/data/megan-gallery.json"
 import { cn } from "@/lib/utils"
 import GoldLine from "@/components/gold-line"
 
@@ -16,69 +15,117 @@ interface ServiceSection {
   cta: string
   ctaLink: string
   imagePosition: "left" | "right"
-  images: string[]
   autoplayDelay: number
   autoplayOffset: number
 }
 
-type GalleryEntry = {
-  file: string
-  confidence: number
-  source: string
-}
-
-type GalleryCategory = "cabinetry" | "decks" | "interiors" | "furniture-restoration"
-
-const galleryData = galleryDataJson as Record<GalleryCategory, GalleryEntry[]>
-
-const getGalleryImages = (category: GalleryCategory, limit = 6) => {
-  const files = (galleryData[category] ?? []).map((entry) => entry.file)
-  if (!files.length) {
-    return ["/placeholder.svg"]
-  }
-  return limit > 0 ? files.slice(0, limit) : files
-}
-
-const getCabinetRefacingImages = (limit = 6) => {
-  const cabinetRefacingImages = [
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0342.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0343.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0507.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0510.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0540.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0577.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0605.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0637.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0664.JPEG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0722.JPEG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0874.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_0953.JPEG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_1245.JPEG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_1369.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_1598.JPEG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_1814.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_2098.JPEG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_2336.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_2500.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_3265.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_3591.JPEG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_3604.JPEG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_3638.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_3644.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_5448.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_6334.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_6621.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_6704.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_6820.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_6886.JPEG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_7584.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_7785.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_7786.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_7788.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_7985.JPG",
-    "/images/cabinets-2/iCloud Photos from Megan Fair/IMG_8179.JPG",
+// Helper function to get images from DEPLOY folders
+// These functions automatically include all images from the respective folders
+const getCabinetRefacingImages = (limit = 0) => {
+  const images = [
+    "/DEPLOY-cabinet-refacing/01979e11-9f9d-711e-8dd4-0cd0c23eae1a.JPG",
+    "/DEPLOY-cabinet-refacing/IMG_0719.JPG",
+    "/DEPLOY-cabinet-refacing/IMG_0721.JPG",
+    "/DEPLOY-cabinet-refacing/IMG_0722.JPG",
+    "/DEPLOY-cabinet-refacing/IMG_0973.JPG",
+    "/DEPLOY-cabinet-refacing/IMG_1244.JPG",
+    "/DEPLOY-cabinet-refacing/IMG_3636.JPG",
+    "/DEPLOY-cabinet-refacing/IMG_6866.JPG",
+    "/DEPLOY-cabinet-refacing/IMG_7040.JPG",
   ]
-  return limit > 0 ? cabinetRefacingImages.slice(0, limit) : cabinetRefacingImages
+  return limit > 0 ? images.slice(0, limit) : images
+}
+
+const getCabinetRefinishingImages = (limit = 0) => {
+  const images = [
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0342.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0343.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0507.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0508.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0509.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0510.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0512.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0513.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0514.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0540.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0577.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0605.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0637.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0664.JPEG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0722.JPEG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0726.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0746.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0874.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0953.JPEG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_1245.JPEG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_1369.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_1598.JPEG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_1814.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_2098.JPEG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_2336.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_2500.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3265.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3591.JPEG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3604.JPEG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3638.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3644.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_5448.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6334.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6621.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6704.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6820.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6886.JPEG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7584.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7785.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7786.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7788.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7985.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_8179.JPG",
+  ]
+  return limit > 0 ? images.slice(0, limit) : images
+}
+
+const getDecksImages = (limit = 0) => {
+  const images = [
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_0974.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_0982.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_0988.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_2697.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_2711.JPEG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_2978.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_3064.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_3239.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5621.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5651.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5652.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5833.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5890.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_7791.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_7794.JPG",
+  ]
+  return limit > 0 ? images.slice(0, limit) : images
+}
+
+const getFurnitureRestorationImages = (limit = 0) => {
+  const images = [
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_0685.JPG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_2956.JPEG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_3341.JPG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_3454.JPG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_4867.JPEG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_6363.JPEG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_6615.JPG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_6673.JPEG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_6698.JPG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7511.JPG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7512.JPG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7556.JPG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7560.JPG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7702.JPG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7988.JPEG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_8005.JPG",
+  ]
+  return limit > 0 ? images.slice(0, limit) : images
 }
 
 const services: ServiceSection[] = [
@@ -91,7 +138,6 @@ const services: ServiceSection[] = [
     cta: "Schedule an Estimate",
     ctaLink: "https://romefinefinishes.dripjobs.com",
     imagePosition: "left",
-    images: getGalleryImages("cabinetry", 8),
     autoplayDelay: 3500,
     autoplayOffset: 1500,
   },
@@ -104,7 +150,6 @@ const services: ServiceSection[] = [
     cta: "Schedule an Estimate",
     ctaLink: "https://romefinefinishes.dripjobs.com",
     imagePosition: "right",
-    images: getCabinetRefacingImages(6),
     autoplayDelay: 3500,
     autoplayOffset: 1500,
   },
@@ -117,7 +162,6 @@ const services: ServiceSection[] = [
     cta: "Schedule an Estimate",
     ctaLink: "https://romefinefinishes.dripjobs.com",
     imagePosition: "right",
-    images: getGalleryImages("decks", 6),
     autoplayDelay: 4000,
     autoplayOffset: 2000,
   },
@@ -130,7 +174,6 @@ const services: ServiceSection[] = [
     cta: "Schedule an Estimate",
     ctaLink: "https://romefinefinishes.dripjobs.com",
     imagePosition: "left",
-    images: getGalleryImages("interiors", 7),
     autoplayDelay: 4000,
     autoplayOffset: 2000,
   },
@@ -143,7 +186,6 @@ const services: ServiceSection[] = [
     cta: "Revive a Favorite Piece",
     ctaLink: "https://romefinefinishes.dripjobs.com",
     imagePosition: "right",
-    images: getGalleryImages("furniture-restoration", 6),
     autoplayDelay: 4000,
     autoplayOffset: 2000,
   },
@@ -226,6 +268,88 @@ function ServiceGallery({
 }
 
 export default function ServiceCards() {
+  const [imageMap, setImageMap] = useState<Record<string, string[]>>({})
+
+  // Fetch images dynamically from API on mount
+  useEffect(() => {
+    const fetchImages = async () => {
+      const categories = [
+        "cabinet-refacing",
+        "cabinet-refinishing",
+        "decks",
+        "furniture-restoration",
+      ]
+
+      const fetchedImages: Record<string, string[]> = {}
+
+      for (const category of categories) {
+        try {
+          const response = await fetch(`/api/list-images?category=${category}`)
+          if (response.ok) {
+            const data = await response.json()
+            fetchedImages[category] = data.images || []
+          } else {
+            // Fallback to static images if API fails
+            switch (category) {
+              case "cabinet-refacing":
+                fetchedImages[category] = getCabinetRefacingImages()
+                break
+              case "cabinet-refinishing":
+                fetchedImages[category] = getCabinetRefinishingImages()
+                break
+              case "decks":
+                fetchedImages[category] = getDecksImages()
+                break
+              case "furniture-restoration":
+                fetchedImages[category] = getFurnitureRestorationImages()
+                break
+            }
+          }
+        } catch (error) {
+          console.error(`Error fetching images for ${category}:`, error)
+          // Fallback to static images
+          switch (category) {
+            case "cabinet-refacing":
+              fetchedImages[category] = getCabinetRefacingImages()
+              break
+            case "cabinet-refinishing":
+              fetchedImages[category] = getCabinetRefinishingImages()
+              break
+            case "decks":
+              fetchedImages[category] = getDecksImages()
+              break
+            case "furniture-restoration":
+              fetchedImages[category] = getFurnitureRestorationImages()
+              break
+          }
+        }
+      }
+
+      setImageMap(fetchedImages)
+    }
+
+    fetchImages()
+  }, [])
+
+  // Get images for a service, using fetched images if available, otherwise use static fallback
+  const getServiceImages = (serviceId: string, fallbackImages: string[], limit: number) => {
+    const categoryMap: Record<string, string> = {
+      "cabinet-refinishing": "cabinet-refinishing",
+      "cabinet-refacing": "cabinet-refacing",
+      "decks": "decks",
+      "furniture-restoration": "furniture-restoration",
+    }
+
+    const category = categoryMap[serviceId]
+    if (!category) {
+      // For services without a DEPLOY folder (like interiors), return empty array or placeholder
+      return fallbackImages.length > 0 ? (limit > 0 ? fallbackImages.slice(0, limit) : fallbackImages) : ["/placeholder.svg"]
+    }
+
+    const images = imageMap[category] || fallbackImages
+    return limit > 0 ? images.slice(0, limit) : images
+  }
+
   return (
     <section className="py-24 px-4 sm:px-6 lg:px-8 bg-background">
       <div className="max-w-6xl mx-auto">
@@ -234,37 +358,68 @@ export default function ServiceCards() {
         </h2>
 
         <div className="space-y-24">
-          {services.map((service, idx) => (
-            <div key={service.id} id={service.id} className="space-y-12">
-              <div className="grid md:grid-cols-2 gap-12 items-center">
-              {/* Image - Left or Right */}
-              <div className={`${service.imagePosition === "right" ? "md:order-2" : "md:order-1"}`}>
-                <ServiceGallery
-                  images={service.images}
-                  imageAlt={service.imageAlt}
-                  autoplayDelay={service.autoplayDelay}
-                  autoplayOffset={service.autoplayOffset}
-                />
-              </div>
+          {services.map((service, idx) => {
+            // Get fallback images based on service ID
+            let fallbackImages: string[] = []
+            let imageLimit = 6
+            switch (service.id) {
+              case "cabinet-refinishing":
+                fallbackImages = getCabinetRefinishingImages()
+                imageLimit = 8
+                break
+              case "cabinet-refacing":
+                fallbackImages = getCabinetRefacingImages()
+                break
+              case "decks":
+                fallbackImages = getDecksImages()
+                break
+              case "furniture-restoration":
+                fallbackImages = getFurnitureRestorationImages()
+                break
+              case "interiors":
+                // Interiors doesn't have a DEPLOY folder, use placeholder
+                fallbackImages = ["/placeholder.svg"]
+                break
+            }
 
-              {/* Text Content */}
-              <div className={`${service.imagePosition === "right" ? "md:order-1" : "md:order-2"} space-y-6`}>
-                <h3 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-foreground">{service.title}</h3>
-                <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">{service.description}</p>
-                <a
-                  href={service.ctaLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block w-full sm:w-auto px-8 py-3 bg-foreground text-background font-medium rounded hover:opacity-90 transition-opacity"
-                >
-                  {service.cta}
-                </a>
+            const displayImages = getServiceImages(
+              service.id,
+              fallbackImages,
+              imageLimit
+            )
+
+            return (
+              <div key={service.id} id={service.id} className="space-y-12">
+                <div className="grid md:grid-cols-2 gap-12 items-center">
+                {/* Image - Left or Right */}
+                <div className={`${service.imagePosition === "right" ? "md:order-2" : "md:order-1"}`}>
+                  <ServiceGallery
+                    images={displayImages}
+                    imageAlt={service.imageAlt}
+                    autoplayDelay={service.autoplayDelay}
+                    autoplayOffset={service.autoplayOffset}
+                  />
+                </div>
+
+                {/* Text Content */}
+                <div className={`${service.imagePosition === "right" ? "md:order-1" : "md:order-2"} space-y-6`}>
+                  <h3 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-foreground">{service.title}</h3>
+                  <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">{service.description}</p>
+                  <a
+                    href={service.ctaLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block w-full sm:w-auto px-8 py-3 bg-foreground text-background font-medium rounded hover:opacity-90 transition-opacity"
+                  >
+                    {service.cta}
+                  </a>
+                </div>
+                </div>
+                {/* Gold line separator */}
+                <GoldLine className="mt-8" />
               </div>
-              </div>
-              {/* Gold line separator */}
-              <GoldLine className="mt-8" />
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
     </section>
