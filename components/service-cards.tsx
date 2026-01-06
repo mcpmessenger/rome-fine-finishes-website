@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import Image from "next/image"
 import useEmblaCarousel from "embla-carousel-react"
 
@@ -268,85 +268,30 @@ function ServiceGallery({
 }
 
 export default function ServiceCards() {
-  const [imageMap, setImageMap] = useState<Record<string, string[]>>({})
-
-  // Fetch images dynamically from API on mount
-  useEffect(() => {
-    const fetchImages = async () => {
-      const categories = [
-        "cabinet-refacing",
-        "cabinet-refinishing",
-        "decks",
-        "furniture-restoration",
-      ]
-
-      const fetchedImages: Record<string, string[]> = {}
-
-      for (const category of categories) {
-        try {
-          const response = await fetch(`/api/list-images?category=${category}`)
-          if (response.ok) {
-            const data = await response.json()
-            fetchedImages[category] = data.images || []
-          } else {
-            // Fallback to static images if API fails
-            switch (category) {
-              case "cabinet-refacing":
-                fetchedImages[category] = getCabinetRefacingImages()
-                break
-              case "cabinet-refinishing":
-                fetchedImages[category] = getCabinetRefinishingImages()
-                break
-              case "decks":
-                fetchedImages[category] = getDecksImages()
-                break
-              case "furniture-restoration":
-                fetchedImages[category] = getFurnitureRestorationImages()
-                break
-            }
-          }
-        } catch (error) {
-          console.error(`Error fetching images for ${category}:`, error)
-          // Fallback to static images
-          switch (category) {
-            case "cabinet-refacing":
-              fetchedImages[category] = getCabinetRefacingImages()
-              break
-            case "cabinet-refinishing":
-              fetchedImages[category] = getCabinetRefinishingImages()
-              break
-            case "decks":
-              fetchedImages[category] = getDecksImages()
-              break
-            case "furniture-restoration":
-              fetchedImages[category] = getFurnitureRestorationImages()
-              break
-          }
-        }
-      }
-
-      setImageMap(fetchedImages)
+  // Use static image lists - these will automatically include all images from DEPLOY folders
+  // When new images are added to DEPLOY folders, update these lists
+  const getServiceImages = (serviceId: string, limit: number) => {
+    let images: string[] = []
+    switch (serviceId) {
+      case "cabinet-refinishing":
+        images = getCabinetRefinishingImages()
+        break
+      case "cabinet-refacing":
+        images = getCabinetRefacingImages()
+        break
+      case "decks":
+        images = getDecksImages()
+        break
+      case "furniture-restoration":
+        images = getFurnitureRestorationImages()
+        break
+      case "interiors":
+        // Interiors doesn't have a DEPLOY folder, use placeholder
+        images = ["/placeholder.svg"]
+        break
+      default:
+        images = ["/placeholder.svg"]
     }
-
-    fetchImages()
-  }, [])
-
-  // Get images for a service, using fetched images if available, otherwise use static fallback
-  const getServiceImages = (serviceId: string, fallbackImages: string[], limit: number) => {
-    const categoryMap: Record<string, string> = {
-      "cabinet-refinishing": "cabinet-refinishing",
-      "cabinet-refacing": "cabinet-refacing",
-      "decks": "decks",
-      "furniture-restoration": "furniture-restoration",
-    }
-
-    const category = categoryMap[serviceId]
-    if (!category) {
-      // For services without a DEPLOY folder (like interiors), return empty array or placeholder
-      return fallbackImages.length > 0 ? (limit > 0 ? fallbackImages.slice(0, limit) : fallbackImages) : ["/placeholder.svg"]
-    }
-
-    const images = imageMap[category] || fallbackImages
     return limit > 0 ? images.slice(0, limit) : images
   }
 
@@ -359,34 +304,9 @@ export default function ServiceCards() {
 
         <div className="space-y-24">
           {services.map((service, idx) => {
-            // Get fallback images based on service ID
-            let fallbackImages: string[] = []
-            let imageLimit = 6
-            switch (service.id) {
-              case "cabinet-refinishing":
-                fallbackImages = getCabinetRefinishingImages()
-                imageLimit = 8
-                break
-              case "cabinet-refacing":
-                fallbackImages = getCabinetRefacingImages()
-                break
-              case "decks":
-                fallbackImages = getDecksImages()
-                break
-              case "furniture-restoration":
-                fallbackImages = getFurnitureRestorationImages()
-                break
-              case "interiors":
-                // Interiors doesn't have a DEPLOY folder, use placeholder
-                fallbackImages = ["/placeholder.svg"]
-                break
-            }
-
-            const displayImages = getServiceImages(
-              service.id,
-              fallbackImages,
-              imageLimit
-            )
+            // Get images based on service ID
+            const imageLimit = service.id === "cabinet-refinishing" ? 8 : 6
+            const displayImages = getServiceImages(service.id, imageLimit)
 
             return (
               <div key={service.id} id={service.id} className="space-y-12">
