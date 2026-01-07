@@ -1,0 +1,16 @@
+steps:
+- name: "gcr.io/cloud-builders/docker"
+  args:
+    - "build"
+    - "--no-cache"
+    - "-t"
+    - "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/rome-fine-finishes-website/rome:$SHORT_SHA"
+    - "-f"
+    - "Dockerfile"
+    - "."
+- name: "gcr.io/cloud-builders/docker"
+  args:
+    - "push"
+    - "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/rome-fine-finishes-website/rome:$SHORT_SHA"
+images:
+- "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/rome-fine-finishes-website/rome:$SHORT_SHA"

@@ -1,0 +1,17 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: rome-fine-finishes
+spec:
+  template:
+    spec:
+      containers:
+        - image: us-central1-docker.pkg.dev/<PROJECT_ID>/cloud-run-source-deploy/rome-fine-finishes-website/rome:latest
+          env:
+            - name: NODE_ENV
+              value: production
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1024Mi
+      containerConcurrency: 80
