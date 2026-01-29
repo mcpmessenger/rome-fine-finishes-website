@@ -35,12 +35,11 @@ If you're seeing "Model not available" errors, it's likely because:
 
 ### Step 3: Available Models
 
-The application will automatically try these models in order:
-- `gemini-1.5-pro-latest` (preferred)
-- `gemini-1.5-flash-latest` (alternative)
-- `gemini-1.5-pro`
-- `gemini-1.5-flash`
-- `gemini-pro-vision` (fallback)
+The application uses these stable models:
+- `gemini-1.5-pro` (preferred for quality)
+- `gemini-1.5-flash` (preferred for speed)
+
+Other models like `gemini-pro-vision` may be used as legacy fallbacks.
 
 **Note:** Google AI Studio API keys typically have access to these models by default. No additional setup needed!
 

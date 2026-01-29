@@ -1,22 +1,20 @@
 import { NextRequest, NextResponse } from "next/server"
-import OpenAI from "openai"
+import { GoogleGenerativeAI } from "@google/generative-ai"
 
+export const runtime = "nodejs"
+export const dynamic = "force-dynamic"
 export const maxDuration = 30
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
 
 export async function POST(request: NextRequest) {
   try {
     // Check for API key
-    const apiKey = process.env.OPENAI_API_KEY
+    const apiKey = process.env.GEMINI_API_KEY
     if (!apiKey) {
-      console.error("OPENAI_API_KEY is not set in environment variables")
+      console.error("GEMINI_API_KEY is not set in environment variables")
       return NextResponse.json(
-        { 
-          error: "API configuration error", 
-          details: "OpenAI API key is not configured. Please set OPENAI_API_KEY in your environment variables." 
+        {
+          error: "API configuration error",
+          details: "Gemini API key is not configured. Please set GEMINI_API_KEY in your environment variables."
         },
         { status: 500 }
       )
@@ -32,7 +30,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-    
+
     const file = formData.get("file") as File
     const fileName = formData.get("fileName") as string || file?.name || "document"
 
@@ -50,7 +48,7 @@ export async function POST(request: NextRequest) {
     let fileType = file.type
     let fileSize = file.size
 
-    // Handle images with GPT-4 Vision
+    // Handle images with Gemini Vision
     if (file.type.startsWith("image/")) {
       try {
         const arrayBuffer = await file.arrayBuffer()
@@ -67,35 +65,47 @@ export async function POST(request: NextRequest) {
 
 Provide a comprehensive description in 2-4 sentences that would be useful for document organization and search.`
 
-        const response = await openai.chat.completions.create({
-          model: "gpt-4o",
-          messages: [
-            {
-              role: "user",
-              content: [
-                {
-                  type: "text",
-                  text: descriptionPrompt,
-                },
-                {
-                  type: "image_url",
-                  image_url: {
-                    url: `data:${mimeType};base64,${base64Image}`,
-                  },
-                },
-              ],
-            },
-          ],
-          max_tokens: 300,
-        })
+        // Initialize Gemini client inside the handler
+        const genAI = new GoogleGenerativeAI(apiKey)
 
-        description = response.choices[0]?.message?.content?.trim() || "Unable to generate description."
+        // Robust fallback list: alias -> versioned -> legacy
+        const modelsToTry = ["gemini-1.5-pro", "gemini-1.5-pro-001", "gemini-pro-vision"]
+
+        let success = false
+
+        for (const modelName of modelsToTry) {
+          try {
+            const model = genAI.getGenerativeModel({ model: modelName })
+
+            const result = await model.generateContent([
+              descriptionPrompt,
+              {
+                inlineData: {
+                  data: base64Image,
+                  mimeType: mimeType
+                }
+              }
+            ])
+
+            const response = await result.response
+            description = response.text().trim() || "Unable to generate description."
+            success = true
+            break
+          } catch (error: any) {
+            console.warn(`Model ${modelName} failed: ${error.message}`)
+          }
+        }
+
+        if (!success) {
+          description = `Image file: ${fileName}. Could not generate AI description (all models failed).`
+        }
       } catch (error: any) {
         console.error("Image description generation error:", error)
         description = `Image file: ${fileName}. Could not generate AI description: ${error.message}`
       }
     } else {
       // For non-image files, generate a basic description based on file type and name
+      // (Gemini 1.5 Pro can also handle PDFs/Text if passed as inline data, but keeping simple for now)
       const fileExtension = fileName.split('.').pop()?.toLowerCase() || ""
       const fileTypeMap: Record<string, string> = {
         pdf: "PDF document",
@@ -106,7 +116,7 @@ Provide a comprehensive description in 2-4 sentences that would be useful for do
         txt: "Text file",
         csv: "Comma-separated values file",
       }
-      
+
       const typeDescription = fileTypeMap[fileExtension] || `${fileExtension.toUpperCase()} file`
       description = `This is a ${typeDescription} named "${fileName}". Uploaded for reference and documentation purposes.`
     }
@@ -121,13 +131,11 @@ Provide a comprehensive description in 2-4 sentences that would be useful for do
   } catch (error: any) {
     console.error("Document description generation error:", error)
     return NextResponse.json(
-      { 
-        error: "Failed to generate description", 
-        details: error.message 
+      {
+        error: "Failed to generate description",
+        details: error.message
       },
       { status: 500 }
     )
   }
 }
-
-

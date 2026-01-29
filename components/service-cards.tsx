@@ -20,99 +20,99 @@ interface ServiceSection {
 }
 
 const fallbackCabinetRefacingImages = [
-  "/DEPLOY-cabinet-refacing/01979e11-9f9d-711e-8dd4-0cd0c23eae1a.JPG",
-  "/DEPLOY-cabinet-refacing/IMG_0719.JPG",
-  "/DEPLOY-cabinet-refacing/IMG_0721.JPG",
-  "/DEPLOY-cabinet-refacing/IMG_0722.JPG",
-  "/DEPLOY-cabinet-refacing/IMG_0973.JPG",
-  "/DEPLOY-cabinet-refacing/IMG_1244.JPG",
-  "/DEPLOY-cabinet-refacing/IMG_3636.JPG",
-  "/DEPLOY-cabinet-refacing/IMG_6866.JPG",
-  "/DEPLOY-cabinet-refacing/IMG_7040.JPG",
-]
+    "/DEPLOY-cabinet-refacing/01979e11-9f9d-711e-8dd4-0cd0c23eae1a.JPG",
+    "/DEPLOY-cabinet-refacing/IMG_0719.JPG",
+    "/DEPLOY-cabinet-refacing/IMG_0721.JPG",
+    "/DEPLOY-cabinet-refacing/IMG_0722.JPG",
+    "/DEPLOY-cabinet-refacing/IMG_0973.JPG",
+    "/DEPLOY-cabinet-refacing/IMG_1244.JPG",
+    "/DEPLOY-cabinet-refacing/IMG_3636.JPG",
+    "/DEPLOY-cabinet-refacing/IMG_6866.JPG",
+    "/DEPLOY-cabinet-refacing/IMG_7040.JPG",
+  ]
 
 const fallbackCabinetRefinishingImages = [
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0342.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0343.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0507.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0508.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0509.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0510.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0512.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0513.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0514.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0540.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0577.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0605.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0637.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0664.JPEG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0722.JPEG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0726.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0746.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0874.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0953.JPEG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_1245.JPEG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_1369.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_1598.JPEG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_1814.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_2098.JPEG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_2336.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_2500.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3265.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3591.JPEG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3604.JPEG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3638.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3644.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_5448.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6334.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6621.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6704.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6820.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6886.JPEG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7584.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7785.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7786.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7788.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7985.JPG",
-  "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_8179.JPG",
-]
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0342.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0343.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0507.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0508.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0509.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0510.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0512.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0513.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0514.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0540.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0577.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0605.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0637.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0664.JPEG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0722.JPEG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0726.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0746.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0874.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_0953.JPEG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_1245.JPEG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_1369.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_1598.JPEG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_1814.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_2098.JPEG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_2336.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_2500.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3265.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3591.JPEG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3604.JPEG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3638.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_3644.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_5448.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6334.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6621.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6704.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6820.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_6886.JPEG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7584.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7785.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7786.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7788.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_7985.JPG",
+    "/DEPLOY-cabinet-refinishing/iCloud Photos from Megan Fair/IMG_8179.JPG",
+  ]
 
 const fallbackDeckImages = [
-  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_0974.JPG",
-  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_0982.JPG",
-  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_0988.JPG",
-  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_2697.JPG",
-  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_2711.JPEG",
-  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_2978.JPG",
-  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_3064.JPG",
-  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_3239.JPG",
-  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5621.JPG",
-  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5651.JPG",
-  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5652.JPG",
-  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5833.JPG",
-  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5890.JPG",
-  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_7791.JPG",
-  "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_7794.JPG",
-]
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_0974.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_0982.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_0988.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_2697.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_2711.JPEG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_2978.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_3064.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_3239.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5621.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5651.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5652.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5833.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_5890.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_7791.JPG",
+    "/DEPLOY-decks/iCloud Photos from Megan Fair/IMG_7794.JPG",
+  ]
 
 const fallbackFurnitureRestorationImages = [
-  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_0685.JPG",
-  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_2956.JPEG",
-  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_3341.JPG",
-  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_3454.JPG",
-  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_4867.JPEG",
-  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_6363.JPEG",
-  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_6615.JPG",
-  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_6673.JPEG",
-  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_6698.JPG",
-  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7511.JPG",
-  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7512.JPG",
-  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7556.JPG",
-  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7560.JPG",
-  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7702.JPG",
-  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7988.JPEG",
-  "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_8005.JPG",
-]
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_0685.JPG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_2956.JPEG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_3341.JPG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_3454.JPG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_4867.JPEG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_6363.JPEG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_6615.JPG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_6673.JPEG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_6698.JPG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7511.JPG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7512.JPG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7556.JPG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7560.JPG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7702.JPG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_7988.JPEG",
+    "/DEPLOY-furniture-restoration/iCloud Photos from Megan Fair/IMG_8005.JPG",
+  ]
 
 const fallbackServiceImages: Record<string, string[]> = {
   "cabinet-refacing": fallbackCabinetRefacingImages,
@@ -231,19 +231,19 @@ function ServiceGallery({
         {images.map((src, idx) => {
           const sanitizedSrc = encodeURI(src)
           return (
-            <div key={src} className="relative shrink-0 grow-0 basis-full h-64 sm:h-80 md:h-[500px]">
-              <Image
+          <div key={src} className="relative shrink-0 grow-0 basis-full h-64 sm:h-80 md:h-[500px]">
+            <Image
                 src={sanitizedSrc}
-                alt={`${imageAlt} slide ${idx + 1}`}
-                fill
-                className={cn(
-                  "object-cover transition-transform duration-[4000ms] ease-out",
-                  selectedIndex === idx ? "scale-105" : "scale-100"
-                )}
-                sizes="(max-width: 768px) 100vw, 600px"
-                priority={idx === 0}
-              />
-            </div>
+              alt={`${imageAlt} slide ${idx + 1}`}
+              fill
+              className={cn(
+                "object-cover transition-transform duration-[4000ms] ease-out",
+                selectedIndex === idx ? "scale-105" : "scale-100"
+              )}
+              sizes="(max-width: 768px) 100vw, 600px"
+              priority={idx === 0}
+            />
+          </div>
           )
         })}
       </div>

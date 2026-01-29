@@ -53,15 +53,15 @@ export default function TransformationViewer({
             </div>
           </div>
         ) : originalImage ? (
-          <div className="relative aspect-video">
-            <img
-              src={URL.createObjectURL(originalImage)}
-              alt="Original"
-              className="w-full h-full object-contain"
-            />
-            <div className="absolute top-2 left-2 px-2 py-1 bg-background/90 backdrop-blur-sm rounded text-xs font-medium">
-              Upload your image to see the transformation
+          <div className="relative aspect-video flex flex-col items-center justify-center bg-muted/50 p-6 text-center">
+            <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mb-4">
+              {/* Re-using Sparkles from lucide-react (need to ensure import or use existing) */}
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-accent"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" /></svg>
             </div>
+            <h3 className="text-lg font-serif font-bold mb-2">Ready to Transform</h3>
+            <p className="text-muted-foreground text-sm max-w-sm">
+              Select your surface type (e.g., Cabinets) and click "Transform Image" to see the magic happen here!
+            </p>
           </div>
         ) : null}
       </div>

@@ -73,15 +73,23 @@ export default function SurfaceTypeDetector({
 
         const data = await response.json()
         const surfaceType = data.surfaceType as SurfaceType
-        setDetectedSurface(surfaceType)
-        onSurfaceDetected(surfaceType)
+
+        if (surfaceType === null) {
+          // Silent fallback to manual selection
+          setDetectedSurface(null)
+          setShowManualSelect(true)
+        } else {
+          setDetectedSurface(surfaceType)
+          onSurfaceDetected(surfaceType)
+        }
       } catch (err: any) {
+        // ... (error handling remains for network errors)
         const errorMessage = err.message || "Failed to detect surface type"
         setError(errorMessage)
         onError?.(errorMessage)
         setDetectedSurface(null)
-        setShowManualSelect(true) // Show manual selection on error
-        hasDetectedRef.current = false // Allow retry on error
+        setShowManualSelect(true)
+        hasDetectedRef.current = false
       } finally {
         setIsDetecting(false)
       }
@@ -89,7 +97,7 @@ export default function SurfaceTypeDetector({
 
     detectSurface()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [image]) // Only depend on image, not callbacks
+  }, [image])
 
   if (!image) {
     return null
@@ -115,29 +123,42 @@ export default function SurfaceTypeDetector({
             <AlertCircle className="w-4 h-4 text-destructive mt-0.5 flex-shrink-0" />
             <div className="flex-1">
               <p className="text-sm font-medium text-destructive">{error}</p>
-              {error.includes("rate limit") && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  The free tier has rate limits. You can continue using manual selection below.
-                </p>
-              )}
             </div>
           </div>
-          {showManualSelect && (
-            <div className="mt-3 pt-3 border-t border-destructive/20">
-              <p className="text-xs font-medium text-foreground mb-2">Continue by selecting manually:</p>
-              <div className="grid grid-cols-2 gap-2">
-                {Object.entries(SURFACE_LABELS).map(([key, label]) => (
-                  <button
-                    key={key}
-                    onClick={() => handleManualSelect(key as SurfaceType)}
-                    className="px-3 py-2 text-xs font-medium bg-background border border-border rounded hover:bg-muted hover:border-accent transition-colors"
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
+          {/* Manual select always shown on error */}
+          <div className="mt-3 pt-3 border-t border-destructive/20">
+            <p className="text-xs font-medium text-foreground mb-2">Continue by selecting manually:</p>
+            <div className="grid grid-cols-2 gap-2">
+              {Object.entries(SURFACE_LABELS).map(([key, label]) => (
+                <button
+                  key={key}
+                  onClick={() => handleManualSelect(key as SurfaceType)}
+                  className="px-3 py-2 text-xs font-medium bg-background border border-border rounded hover:bg-muted hover:border-accent transition-colors"
+                >
+                  {label}
+                </button>
+              ))}
             </div>
-          )}
+          </div>
+        </div>
+      ) : showManualSelect ? (
+        // Show manual selection quietly (no error banner)
+        <div className="p-4 bg-muted/30 border border-border rounded-lg">
+          <div className="flex items-center gap-2 mb-3 text-muted-foreground">
+            <Hand className="w-4 h-4" />
+            <p className="text-sm font-medium">Please select the surface type manually:</p>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            {Object.entries(SURFACE_LABELS).map(([key, label]) => (
+              <button
+                key={key}
+                onClick={() => handleManualSelect(key as SurfaceType)}
+                className="px-3 py-2 text-xs font-medium bg-background border border-border rounded hover:bg-muted hover:border-accent transition-colors"
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
       ) : detectedSurface ? (
         <div className="flex items-center justify-center gap-2 p-4 bg-accent/10 rounded-lg border border-accent/20">

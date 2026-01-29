@@ -1,16 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
 import OpenAI from "openai"
 import Replicate from "replicate"
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || "",
-})
-
-const replicate = new Replicate({
-  auth: process.env.REPLICATE_API_TOKEN || "",
-})
+import { GoogleGenerativeAI } from "@google/generative-ai"
 
 export const runtime = "nodejs"
+export const dynamic = "force-dynamic"
 export const maxDuration = 60
 
 // Priority surface transformation prompts
@@ -21,21 +15,21 @@ const TRANSFORMATION_PROMPTS = {
 - Apply realistic wood grain texture and professional-grade finish.
 - Maintain exact cabinet structure, layout, and perspective.
 - Create a dramatic but tasteful aesthetic transformation that shows clear before/after contrast.`,
-  
+
   fireplace: `Modern fireplace makeover transformation:
 - If fireplace is dark or dated: Transform to light, modern finishes like white shiplap, light gray stone, or clean white tile. Add a floating wood or white mantel shelf.
 - If fireplace is light or plain: Transform to rich, dramatic finishes like dark slate, charcoal stone, or deep gray tile. Add a substantial dark wood or black mantel.
 - Maintain exact fireplace structure, size, and proportions.
 - Enhance with subtle ambient lighting.
 - Create a striking visual transformation that modernizes the space.`,
-  
+
   deck: `Professional deck refinishing transformation:
 - If deck is dark or weathered: Transform to light, fresh finishes like light gray composite decking, white-washed wood, or natural light wood tones. Add modern black or white railings.
 - If deck is light or faded: Transform to rich, warm finishes like dark brown composite, rich cedar tones, or deep mahogany. Add elegant dark railings.
 - Maintain exact deck structure, layout, and perspective.
 - Apply realistic wood grain texture with proper board spacing.
 - Create a dramatic restoration that shows clear improvement.`,
-  
+
   room: `Professional interior refinishing transformation:
 - If room is dark: Transform to bright, airy finishes with light paint colors, white trim, and light-toned surfaces. Add modern light fixtures.
 - If room is light: Transform to rich, cozy finishes with warm paint colors, dark accents, and deeper-toned surfaces. Add warm ambient lighting.
@@ -49,12 +43,14 @@ export async function POST(request: NextRequest) {
     // Check for API keys
     const openaiKey = process.env.OPENAI_API_KEY
     const replicateKey = process.env.REPLICATE_API_TOKEN
-    
-    if (!openaiKey) {
+    const geminiKey = process.env.GEMINI_API_KEY
+
+    // Check for Gemini key (primary for analysis)
+    if (!geminiKey) {
       return NextResponse.json(
-        { 
-          error: "API configuration error", 
-          details: "OpenAI API key is not configured. Please set OPENAI_API_KEY in your environment variables." 
+        {
+          error: "API configuration error",
+          details: "Gemini API key is not configured. Please set GEMINI_API_KEY in your environment variables."
         },
         { status: 500 }
       )
@@ -62,14 +58,21 @@ export async function POST(request: NextRequest) {
 
     if (!replicateKey) {
       return NextResponse.json(
-        { 
-          error: "API configuration error", 
-          details: "Replicate API token is not configured. Please set REPLICATE_API_TOKEN in your environment variables." 
+        {
+          error: "API configuration error",
+          details: "Replicate API token is not configured. Please set REPLICATE_API_TOKEN in your environment variables."
         },
         { status: 500 }
       )
     }
-    
+
+    // Initialize clients inside the handler
+    const replicate = new Replicate({
+      auth: replicateKey,
+    })
+
+    const genAI = new GoogleGenerativeAI(geminiKey)
+
     console.log("Transform image request received")
 
     let formData: FormData
@@ -82,7 +85,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-    
+
     const file = formData.get("image") as File
     const surfaceType = formData.get("surfaceType") as string
     const customDirections = formData.get("customDirections") as string | null
@@ -115,7 +118,7 @@ export async function POST(request: NextRequest) {
 
     // Get transformation prompt for the surface type
     const baseTransformationPrompt = TRANSFORMATION_PROMPTS[surfaceType as keyof typeof TRANSFORMATION_PROMPTS]
-    
+
     // Incorporate custom directions if provided
     let transformationPrompt = baseTransformationPrompt
     if (customDirections && customDirections.trim()) {
@@ -126,9 +129,9 @@ ${customDirections.trim()}
 
 IMPORTANT: The user's custom directions take priority. Apply their specific requests while still maintaining the same structure, layout, and perspective.`
     }
-    
-    // Step 1: Use GPT-4 Vision to analyze the image and create a transformation prompt
-    console.log(`Step 1: Analyzing image with GPT-4 Vision for surface type: ${surfaceType}`)
+
+    // Step 1: Use Gemini 1.5 Pro to analyze the image and create a transformation prompt
+    console.log(`Step 1: Analyzing image with Gemini 1.5 Pro for surface type: ${surfaceType}`)
     const analysisPrompt = `Analyze this image carefully.${hasCustomDirections ? '' : ' First, determine if the current finish is DARK or LIGHT.'}
 
 ABSOLUTE REQUIREMENTS - DO NOT CHANGE ANYTHING EXCEPT SURFACE FINISHES:
@@ -159,63 +162,65 @@ ${hasCustomDirections ? '1. Incorporates the user\'s specific custom directions'
 
 Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 sentences max).`
 
-    let analysisResponse
-    try {
-      analysisResponse = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
+    let transformationDescription
+
+    // Robust fallback list for detailed analysis: alias -> versioned -> legacy
+    const analysisModels = ["gemini-1.5-pro", "gemini-1.5-pro-001", "gemini-pro-vision"]
+
+    let success = false
+
+    for (const modelName of analysisModels) {
+      try {
+        console.log(`Analyzing image with model: ${modelName}`)
+        const model = genAI.getGenerativeModel({ model: modelName })
+
+        const result = await model.generateContent([
+          analysisPrompt,
           {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: analysisPrompt,
-              },
-              {
-                type: "image_url",
-                image_url: {
-                  url: `data:${mimeType};base64,${base64Image}`,
-                },
-              },
-            ],
-          },
-        ],
-        max_tokens: 200,
-      })
-    } catch (error: any) {
-      if (error.status === 429 || error.message?.includes("rate limit")) {
-        return NextResponse.json(
-          { 
-            error: "API rate limit exceeded", 
-            details: "You've made too many requests. Please wait a few minutes and try again." 
-          },
-          { status: 429 }
-        )
+            inlineData: {
+              data: base64Image,
+              mimeType: mimeType
+            }
+          }
+        ])
+
+        const response = await result.response
+        transformationDescription = response.text().trim()
+        success = true
+        console.log(`Successfully analyzed with ${modelName}`)
+        break
+      } catch (error: any) {
+        console.warn(`Model ${modelName} failed: ${error.message}`)
+        // Continue to next model on error
       }
-      throw error
     }
 
-    const transformationDescription = analysisResponse.choices[0]?.message?.content || transformationPrompt
+    // Fallback if all analysis fails - use the base prompt
+    if (!success) {
+      console.warn("Gemini analysis failed for all models. Using base fallback prompt.")
+      transformationDescription = transformationPrompt
+    }
+
     console.log("Transformation description:", transformationDescription)
 
     // Step 2: Use Replicate's image-to-image models
     // These models accept the original image and modify it while maintaining structure
     console.log("Step 2: Generating transformed image with image-to-image models")
-    
+
     // Replicate SDK accepts data URLs directly
     const imageDataUrl = `data:${mimeType};base64,${base64Image}`
-    
+
     // Try the most reliable model first
     // Only try alternatives if the first one fails with a non-rate-limit error
     let output: string[] | undefined
     let modelUsed = ""
-    
+
     // Check if OpenAI API key is available for gpt-image-1
     const openaiApiKey = process.env.OPENAI_API_KEY
     if (!openaiApiKey) {
       console.warn("OPENAI_API_KEY not found. gpt-image-1 model will not be available.")
     }
-    
+
     // Try the user-specified model first, then fallback to other img2img models
     // 
     // TO ADD NEW MODELS:
@@ -270,11 +275,11 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
       //   }
       // },
     ]
-    
+
     // Helper function to extract URL from various object formats
     const extractUrlFromObject = (obj: any, depth: number = 0, maxDepth: number = 5): string | null => {
       if (!obj || typeof obj !== 'object' || depth > maxDepth) return null
-      
+
       // Handle Replicate FileOutput objects (have .url property or async url getter)
       if ('url' in obj) {
         const urlValue = obj.url
@@ -292,10 +297,10 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
           if (nested) return nested
         }
       }
-      
+
       // Common property names (expanded list)
       const urlProperties = [
-        'url', 'output', 'image', 'image_url', 'file', 'file_url', 
+        'url', 'output', 'image', 'image_url', 'file', 'file_url',
         'output_url', 'result', 'result_url', 'imageUrl', 'imageUrl',
         'href', 'src', 'source', 'content', 'data', 'value',
         'file_url', 'output_file', 'generated_image', 'transformed_image'
@@ -323,12 +328,12 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
           }
         }
       }
-      
+
       // Check all string values in the object (aggressive search)
       for (const [key, value] of Object.entries(obj)) {
         // Skip functions and symbols
         if (typeof value === 'function' || typeof value === 'symbol') continue
-        
+
         if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('data:'))) {
           console.log(`Found URL in property "${key}": ${value.substring(0, 100)}`)
           return value
@@ -355,10 +360,10 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
           }
         }
       }
-      
+
       return null
     }
-    
+
     // Helper function to process model result
     const processModelResult = (result: any): string[] | null => {
       // Handle async iterators (some Replicate models return async iterators)
@@ -368,7 +373,7 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
         // Note: We can't await in a non-async function, so we'll handle this in the caller
         return null // Signal to handle async iterator in caller
       }
-      
+
       // Handle different output formats
       if (Array.isArray(result)) {
         // Filter out functions and extract URLs
@@ -400,7 +405,7 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
           console.warn('Result appears to be an error object:', result)
           return null
         }
-        
+
         // Handle various object formats
         if ('output' in result) {
           const outputValue = (result as any).output
@@ -417,11 +422,11 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
             return url ? [url] : null
           }
         }
-        
+
         // Try to extract URL from the object directly
         const url = extractUrlFromObject(result)
         if (url) return [url]
-        
+
         // Try common array properties
         if ('urls' in result && Array.isArray((result as any).urls)) {
           return (result as any).urls.filter((u: any): u is string => typeof u === 'string')
@@ -436,7 +441,7 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
       }
       return null
     }
-    
+
     // Try each model in sequence until we get valid output
     let lastError: Error | null = null
     for (let i = 0; i < modelsToTry.length; i++) {
@@ -444,12 +449,12 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
       try {
         console.log(`Trying model ${i + 1}/${modelsToTry.length}: ${model.name}`)
         console.log(`Replicate auth token present: ${!!process.env.REPLICATE_API_TOKEN}`)
-        
+
         if (i > 0) {
           // Add a small delay between attempts to avoid rate limits
           await new Promise(resolve => setTimeout(resolve, 1000))
         }
-        
+
         let rawResult: any = await replicate.run(model.name as `${string}/${string}`, { input: model.params })
         console.log(`Model ${model.name} - RAW RESULT:`, {
           type: typeof rawResult,
@@ -457,10 +462,10 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
           keys: rawResult && typeof rawResult === 'object' ? Object.keys(rawResult) : null,
           value: rawResult
         })
-        
+
         // Handle Replicate FileOutput objects and ReadableStreams
         let result: any = rawResult
-        
+
         // Check if result is an array with ReadableStream (flux-schnell, gpt-image-1)
         if (Array.isArray(rawResult) && rawResult.length > 0 && rawResult[0] instanceof ReadableStream) {
           console.log('Found ReadableStream in array, converting to buffer...')
@@ -468,7 +473,7 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
             const stream = rawResult[0]
             const reader = stream.getReader()
             const chunks: Uint8Array[] = []
-            
+
             while (true) {
               const { done, value } = await reader.read()
               if (done) break
@@ -476,7 +481,7 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
                 chunks.push(value)
               }
             }
-            
+
             if (chunks.length > 0) {
               const totalLength = chunks.reduce((sum, chunk) => sum + chunk.length, 0)
               const combinedBuffer = new Uint8Array(totalLength)
@@ -506,7 +511,7 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
               isString: typeof urlValue === 'string',
               value: typeof urlValue === 'string' ? urlValue.substring(0, 100) : 'non-string'
             })
-            
+
             // If url is a promise or has a .then method, await it
             if (urlValue && typeof urlValue.then === 'function') {
               console.log('Found promise-based URL, awaiting...')
@@ -536,7 +541,7 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
               result = urlValue
             }
           }
-          
+
           // Method 2: Try calling .toString() or inspecting the object more deeply
           if (result === rawResult && typeof rawResult === 'object') {
             // Check for common methods that might return URLs
@@ -565,7 +570,7 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
             }
           }
         }
-        
+
         // Handle async iterators (e.g., Nano Banana returns binary chunks)
         let processedResult: any = result
         if (result && typeof result === 'object' && typeof (result as any)[Symbol.asyncIterator] === 'function') {
@@ -573,10 +578,10 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
           const chunks: Uint8Array[] = []
           const iteratorResults: string[] = []
           const asyncIterable = result as AsyncIterable<any>
-          
+
           for await (const iteratorItem of asyncIterable) {
             console.log(`Iterator item type: ${typeof iteratorItem}, is Uint8Array: ${iteratorItem instanceof Uint8Array}`)
-            
+
             // Handle binary data chunks (Uint8Array) - this is image data
             if (iteratorItem instanceof Uint8Array) {
               chunks.push(iteratorItem)
@@ -591,7 +596,7 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
               }
             }
           }
-          
+
           // If we got binary chunks, convert them to base64 data URL
           if (chunks.length > 0) {
             console.log(`Received ${chunks.length} binary chunks, converting to image...`)
@@ -612,17 +617,17 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
           } else {
             processedResult = null
           }
-          
+
           console.log('Consumed iterator, results:', {
             binaryChunks: chunks.length,
             urlResults: iteratorResults.length,
             finalResult: processedResult ? (typeof processedResult === 'string' ? processedResult.substring(0, 100) + '...' : 'array/object') : null
           })
         }
-        
+
         // Process the result
         const processedOutput = processModelResult(processedResult)
-        
+
         // Enhanced logging for debugging - FULL object inspection
         console.log(`Model ${model.name} - FULL RESULT INSPECTION:`)
         console.log(`  - Type: ${typeof processedResult}`)
@@ -644,7 +649,7 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
           outputType: Array.isArray(processedOutput) ? 'array' : typeof processedOutput,
           firstItem: processedOutput?.[0] ? (typeof processedOutput[0] === 'string' ? processedOutput[0].substring(0, 100) + '...' : processedOutput[0]) : null,
         })
-        
+
         if (processedOutput && processedOutput.length > 0) {
           output = processedOutput
           modelUsed = model.name
@@ -668,38 +673,38 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
           body: error.body,
           response: error.response,
         })
-        
+
         const errorMessage = error.message || JSON.stringify(error.body || error.response || {})
-        
+
         // If rate limit, return immediately
         if (error.status === 429 || errorMessage?.includes("rate limit") || errorMessage?.includes("too many requests")) {
           return NextResponse.json(
-            { 
-              error: "API rate limit exceeded", 
-              details: "You've made too many requests. Please wait a few minutes and try again." 
+            {
+              error: "API rate limit exceeded",
+              details: "You've made too many requests. Please wait a few minutes and try again."
             },
             { status: 429 }
           )
         }
-        
+
         // For 404 errors, log that the model might not exist
         if (error.status === 404 || error.statusCode === 404) {
           console.warn(`Model ${model.name} not found (404). Model may be deprecated or moved.`)
         }
-        
+
         // For other errors, continue to next model
         lastError = error
         console.log(`Model ${model.name} failed with error: ${errorMessage}, trying next model...`)
         continue
       }
     }
-    
+
     // If we get here, all models failed or returned empty output
     if (!output || !modelUsed) {
       console.error("All models failed or returned empty output")
       console.error(`Models attempted: ${modelsToTry.map(m => m.name).join(', ')}`)
-      
-      const errorDetails = lastError 
+
+      const errorDetails = lastError
         ? `All attempted models failed. Last error: ${lastError.message}. 
 
 **Troubleshooting Steps:**
@@ -714,7 +719,7 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
 - Add it to the modelsToTry array in the code
 - Check the model's documentation for required parameters`
         : "No model was successfully executed. Check that your API keys are set correctly in .env.local"
-      
+
       throw new Error(`Failed to generate image: ${errorDetails}`)
     }
 
@@ -725,13 +730,13 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
     if (output) {
       console.log(`Output array contents:`, output.map((item, idx) => ({ index: idx, type: typeof item, value: typeof item === 'string' ? item.substring(0, 100) + '...' : item })))
     }
-    
+
     const generatedImageUrl = output[0]
     if (!generatedImageUrl || typeof generatedImageUrl !== 'string') {
       console.error("Generated image URL is invalid:", generatedImageUrl)
       throw new Error(`Failed to generate image: Invalid output format. Expected string URL, got ${typeof generatedImageUrl}`)
     }
-    
+
     console.log(`Generated image URL/Data:`, generatedImageUrl.substring(0, 100) + '...')
 
     console.log("Image generated successfully")
@@ -739,7 +744,7 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
     // Step 3: Handle the generated image (could be URL or base64 data URL)
     let imageBase64: string
     let contentType: string
-    
+
     if (generatedImageUrl.startsWith('data:')) {
       // It's already a base64 data URL - extract the base64 part
       console.log("Image is already a base64 data URL, extracting...")
@@ -774,11 +779,11 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
     })
   } catch (error: any) {
     console.error("Image transformation error:", error)
-    
+
     // Provide more specific error messages
     let errorMessage = "Failed to transform image"
     let errorDetails = error.message || "Unknown error occurred"
-    
+
     if (error.message?.includes("API_KEY") || error.message?.includes("api key") || error.status === 401) {
       errorMessage = "API configuration error"
       errorDetails = "Invalid or missing API key. Please check your environment variables."
@@ -789,7 +794,7 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
       errorMessage = "Insufficient API quota"
       errorDetails = "Your API account has insufficient credits. Please add credits to your account."
     }
-    
+
     return NextResponse.json(
       { error: errorMessage, details: errorDetails },
       { status: 500 }
