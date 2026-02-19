@@ -158,9 +158,8 @@ export default function Reviews() {
               <button
                 key={index}
                 onClick={() => setCurrentIndex(index)}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  index === currentIndex ? "bg-accent w-6" : "bg-muted-foreground/30"
-                }`}
+                className={`w-2 h-2 rounded-full transition-all ${index === currentIndex ? "bg-accent w-6" : "bg-muted-foreground/30"
+                  }`}
                 aria-label={`Go to review ${index + 1}`}
               />
             ))}
@@ -213,9 +212,8 @@ export default function Reviews() {
               <button
                 key={index}
                 onClick={() => setCurrentIndex(index)}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  index === currentIndex ? "bg-accent w-6" : "bg-muted-foreground/30"
-                }`}
+                className={`w-2 h-2 rounded-full transition-all ${index === currentIndex ? "bg-accent w-6" : "bg-muted-foreground/30"
+                  }`}
                 aria-label={`Go to review ${index + 1}`}
               />
             ))}
@@ -227,7 +225,7 @@ export default function Reviews() {
           <p className="text-lg text-muted-foreground">Read more reviews and see our work</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="https://www.facebook.com/ProjectPartnersDesign"
+              href="https://www.facebook.com/RomeFineFinishes/"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block px-8 py-3 bg-foreground text-background font-medium rounded hover:opacity-90 transition-opacity"

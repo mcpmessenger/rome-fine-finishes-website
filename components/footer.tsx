@@ -79,7 +79,7 @@ export default function Footer() {
             <h4 className="font-semibold">Follow Us</h4>
             <div className="flex gap-4">
               <a
-                href="https://www.facebook.com/ProjectPartnersDesign"
+                href="https://www.facebook.com/RomeFineFinishes/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center transition-transform hover:scale-105"
@@ -94,7 +94,7 @@ export default function Footer() {
                 />
               </a>
               <a
-                href="https://www.instagram.com/projectpartnersdsn/"
+                href="https://www.instagram.com/romefinefinishes/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center transition-transform hover:scale-105"
