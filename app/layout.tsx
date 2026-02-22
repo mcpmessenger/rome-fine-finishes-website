@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Lora, Inter } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import Script from "next/script"
 import "./globals.css"
 
 const lora = Lora({
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
     description: "Custom cabinetry, decking, and interior finishing services",
     type: "website",
   },
-    generator: 'v0.app'
+  generator: 'v0.app'
 }
 
 export default function RootLayout({
@@ -47,6 +48,18 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className={`${inter.variable} ${lora.variable} antialiased`}>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=AW-17957773014"
+          strategy="afterInteractive"
+        />
+        <Script id="google-tag" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-17957773014');
+          `}
+        </Script>
         {children}
         <Analytics />
       </body>
