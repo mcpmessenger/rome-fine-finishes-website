@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Navigation from "@/components/navigation"
 import Hero from "@/components/hero"
 import Introduction from "@/components/introduction"
+import AboutUs from "@/components/about-us"
 import ServiceCards from "@/components/service-cards"
 import Reviews from "@/components/reviews"
 import Footer from "@/components/footer"
@@ -47,6 +48,7 @@ export default function Home() {
       <Introduction />
       <ServiceCards />
       <Reviews />
+      <AboutUs />
       <Footer />
       {/* Hidden SEO Keywords Section */}
       <div className="sr-only" aria-hidden="true">
