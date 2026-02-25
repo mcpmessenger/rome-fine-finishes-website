@@ -169,6 +169,7 @@ function ServiceGallery({
               src={src}
               alt={`${imageAlt} slide ${idx + 1}`}
               fill
+              unoptimized
               className={cn(
                 "object-cover transition-transform duration-[4000ms] ease-out",
                 selectedIndex === idx ? "scale-105" : "scale-100"
