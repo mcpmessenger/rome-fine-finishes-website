@@ -1,20 +1,23 @@
 import { NextRequest, NextResponse } from "next/server"
-import { GoogleGenerativeAI } from "@google/generative-ai"
+import OpenAI from "openai"
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY || "",
+})
 
 export const runtime = "nodejs"
-export const dynamic = "force-dynamic"
 export const maxDuration = 30
 
 export async function POST(request: NextRequest) {
   try {
     // Check for API key
-    const apiKey = process.env.GEMINI_API_KEY
+    const apiKey = process.env.OPENAI_API_KEY
     if (!apiKey) {
-      console.error("GEMINI_API_KEY is not set in environment variables")
+      console.error("OPENAI_API_KEY is not set in environment variables")
       return NextResponse.json(
-        {
-          error: "API configuration error",
-          details: "Gemini API key is not configured. Please set GEMINI_API_KEY in your environment variables."
+        { 
+          error: "API configuration error", 
+          details: "OpenAI API key is not configured. Please set OPENAI_API_KEY in your environment variables." 
         },
         { status: 500 }
       )
@@ -31,7 +34,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-
+    
     const file = formData.get("image") as File
 
     if (!file) {
@@ -65,74 +68,59 @@ Priority order (return ONLY one of these exact values):
 
 Be specific and accurate. Return ONLY the single word: "cabinets", "fireplace", "deck", or "room" (lowercase, no quotes, no explanation).`
 
-    // Initialize Gemini client inside the handler
-    // Initialize Gemini client inside the handler
-    const genAI = new GoogleGenerativeAI(apiKey)
+    // Use OpenAI Vision API (GPT-4 Vision)
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o", // GPT-4 Omni (latest vision model)
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: detectionPrompt,
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:${mimeType};base64,${base64Image}`,
+              },
+            },
+          ],
+        },
+      ],
+      max_tokens: 10, // We only need one word
+    })
 
-    // Robust fallback list: alias -> versioned -> legacy
-    const modelsToTry = ["gemini-1.5-flash", "gemini-1.5-flash-001", "gemini-pro-vision"]
+    const detectedType = response.choices[0]?.message?.content?.trim().toLowerCase() || "room"
 
-    let surfaceType = "room"
-    let modelUsed = ""
-    let success = false
+    // Validate detected type
+    const validTypes = ["cabinets", "fireplace", "deck", "room"]
+    const surfaceType = validTypes.includes(detectedType) ? detectedType : "room"
 
-    for (const modelName of modelsToTry) {
-      try {
-        console.log(`Attempting surface detection with model: ${modelName}`)
-        const model = genAI.getGenerativeModel({ model: modelName })
-
-        const result = await model.generateContent([
-          detectionPrompt,
-          {
-            inlineData: {
-              data: base64Image,
-              mimeType: mimeType
-            }
-          }
-        ])
-
-        const response = await result.response
-        const detectedType = response.text().trim().toLowerCase().replace(/['"]/g, "") || "room"
-
-        // Validate detected type
-        const validTypes = ["cabinets", "fireplace", "deck", "room"]
-        surfaceType = validTypes.includes(detectedType) ? detectedType : "room"
-
-        modelUsed = modelName
-        success = true
-        break // Success!
-      } catch (error: any) {
-        console.warn(`Model ${modelName} failed: ${error.message}`)
-        // If it's a 404 (Not Found) or 400 (Bad Request), try next. 
-        // If it's 403 (Forbidden), also try next (though unlikely to help if key is bad).
-        continue
-      }
-    }
-
-    if (!success) {
-      console.warn(`All Gemini models failed. Last attempted: ${modelsToTry[modelsToTry.length - 1]}`)
-      // Return null to trigger manual selection in frontend without showing a scary error
-      return NextResponse.json({ surfaceType: null })
-    }
-
-    console.log(`Detected surface type: ${surfaceType} (using ${modelUsed})`)
+    console.log(`Detected surface type: ${surfaceType}`)
 
     return NextResponse.json({ surfaceType })
   } catch (error: any) {
     console.error("Surface detection error:", error)
-
+    
     // Provide more specific error messages
     let errorMessage = "Failed to detect surface type"
     let errorDetails = error.message || "Unknown error occurred"
-
+    
     if (error.message?.includes("API_KEY") || error.message?.includes("api key") || error.status === 401) {
       errorMessage = "API configuration error"
-      errorDetails = "Invalid or missing Gemini API key. Please check your environment variables."
+      errorDetails = "Invalid or missing OpenAI API key. Please check your environment variables."
     } else if (error.message?.includes("quota") || error.message?.includes("rate limit") || error.status === 429) {
       errorMessage = "API rate limit exceeded"
       errorDetails = "You've made too many requests. Please wait a few minutes and try again. You can use the manual selection option below to continue without waiting."
+    } else if (error.message?.includes("insufficient_quota") || error.status === 402) {
+      errorMessage = "Insufficient API quota"
+      errorDetails = "Your OpenAI account has insufficient credits. Please add credits to your account."
+    } else if (error.message?.includes("model") || error.status === 404) {
+      errorMessage = "Model not available"
+      errorDetails = "The selected model is not available. Please check your API key permissions."
     }
-
+    
     return NextResponse.json(
       { error: errorMessage, details: errorDetails },
       { status: 500 }
