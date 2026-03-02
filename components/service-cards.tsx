@@ -26,7 +26,8 @@ type GalleryEntry = {
   source: string
 }
 
-type GalleryCategory = "cabinetry" | "decks" | "interiors" | "furniture-restoration"
+type GalleryCategory = "cabinet-refinishing" | "cabinet-refacing" | "decks" | "interiors" | "furniture-restoration"
+
 
 const galleryData = galleryDataJson as Record<GalleryCategory, GalleryEntry[]>
 
@@ -39,6 +40,7 @@ const getGalleryImages = (category: GalleryCategory, limit = 6, offset = 0) => {
   return limit > 0 ? sliced.slice(0, limit) : sliced
 }
 
+
 const services: ServiceSection[] = [
   {
     id: "cabinet-refinishing",
@@ -49,7 +51,8 @@ const services: ServiceSection[] = [
     cta: "Schedule an Estimate",
     ctaLink: "https://romefinefinishes.dripjobs.com",
     imagePosition: "left",
-    images: getGalleryImages("cabinetry", 24, 0),
+    images: getGalleryImages("cabinet-refinishing", 0),
+
     autoplayDelay: 7000,
     autoplayOffset: 3000,
   },
@@ -62,7 +65,8 @@ const services: ServiceSection[] = [
     cta: "Schedule an Estimate",
     ctaLink: "https://romefinefinishes.dripjobs.com",
     imagePosition: "right",
-    images: getGalleryImages("cabinetry", 23, 24),
+    images: getGalleryImages("cabinet-refacing", 0),
+
     autoplayDelay: 7500,
     autoplayOffset: 1500,
   },
@@ -75,7 +79,8 @@ const services: ServiceSection[] = [
     cta: "Schedule an Estimate",
     ctaLink: "https://romefinefinishes.dripjobs.com",
     imagePosition: "right",
-    images: getGalleryImages("decks", 13),
+    images: getGalleryImages("decks", 0),
+
     autoplayDelay: 8000,
     autoplayOffset: 4500,
   },
@@ -88,7 +93,8 @@ const services: ServiceSection[] = [
     cta: "Schedule an Estimate",
     ctaLink: "https://romefinefinishes.dripjobs.com",
     imagePosition: "left",
-    images: getGalleryImages("interiors", 22),
+    images: getGalleryImages("interiors", 0),
+
     autoplayDelay: 9000,
     autoplayOffset: 6000,
   },
@@ -101,7 +107,8 @@ const services: ServiceSection[] = [
     cta: "Revive a Favorite Piece",
     ctaLink: "https://romefinefinishes.dripjobs.com",
     imagePosition: "right",
-    images: getGalleryImages("furniture-restoration", 13),
+    images: getGalleryImages("furniture-restoration", 0),
+
     autoplayDelay: 8500,
     autoplayOffset: 5000,
   },
