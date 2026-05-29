@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import OpenAI from "openai"
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || "",
-})
+import { GoogleGenerativeAI } from "@google/generative-ai"
 
 export const runtime = "nodejs"
 export const maxDuration = 30
@@ -11,13 +7,13 @@ export const maxDuration = 30
 export async function POST(request: NextRequest) {
   try {
     // Check for API key
-    const apiKey = process.env.OPENAI_API_KEY
+    const apiKey = process.env.GEMINI_API_KEY
     if (!apiKey) {
-      console.error("OPENAI_API_KEY is not set in environment variables")
+      console.error("GEMINI_API_KEY is not set in environment variables")
       return NextResponse.json(
         { 
           error: "API configuration error", 
-          details: "OpenAI API key is not configured. Please set OPENAI_API_KEY in your environment variables." 
+          details: "Gemini API key is not configured. Please set GEMINI_API_KEY in your environment variables." 
         },
         { status: 500 }
       )
@@ -27,7 +23,6 @@ export async function POST(request: NextRequest) {
     try {
       formData = await request.formData()
     } catch (error: any) {
-      // Handle form data parsing errors
       console.error("FormData parsing error:", error)
       return NextResponse.json(
         { error: "Failed to parse form data", details: error.message },
@@ -68,30 +63,23 @@ Priority order (return ONLY one of these exact values):
 
 Be specific and accurate. Return ONLY the single word: "cabinets", "fireplace", "deck", or "room" (lowercase, no quotes, no explanation).`
 
-    // Use OpenAI Vision API (GPT-4 Vision)
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o", // GPT-4 Omni (latest vision model)
-      messages: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: detectionPrompt,
-            },
-            {
-              type: "image_url",
-              image_url: {
-                url: `data:${mimeType};base64,${base64Image}`,
-              },
-            },
-          ],
-        },
-      ],
-      max_tokens: 10, // We only need one word
-    })
+    // Initialize Gemini API
+    const genAI = new GoogleGenerativeAI(apiKey)
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" })
 
-    const detectedType = response.choices[0]?.message?.content?.trim().toLowerCase() || "room"
+    // Call Gemini Vision API
+    const result = await model.generateContent([
+      detectionPrompt,
+      {
+        inlineData: {
+          data: base64Image,
+          mimeType: mimeType
+        }
+      }
+    ])
+
+    const response = await result.response
+    const detectedType = response.text().trim().toLowerCase() || "room"
 
     // Validate detected type
     const validTypes = ["cabinets", "fireplace", "deck", "room"]
@@ -109,16 +97,13 @@ Be specific and accurate. Return ONLY the single word: "cabinets", "fireplace", 
     
     if (error.message?.includes("API_KEY") || error.message?.includes("api key") || error.status === 401) {
       errorMessage = "API configuration error"
-      errorDetails = "Invalid or missing OpenAI API key. Please check your environment variables."
+      errorDetails = "Invalid or missing Gemini API key. Please check your environment variables."
     } else if (error.message?.includes("quota") || error.message?.includes("rate limit") || error.status === 429) {
       errorMessage = "API rate limit exceeded"
       errorDetails = "You've made too many requests. Please wait a few minutes and try again. You can use the manual selection option below to continue without waiting."
     } else if (error.message?.includes("insufficient_quota") || error.status === 402) {
       errorMessage = "Insufficient API quota"
-      errorDetails = "Your OpenAI account has insufficient credits. Please add credits to your account."
-    } else if (error.message?.includes("model") || error.status === 404) {
-      errorMessage = "Model not available"
-      errorDetails = "The selected model is not available. Please check your API key permissions."
+      errorDetails = "Your Gemini account has insufficient credits. Please check your billing settings."
     }
     
     return NextResponse.json(

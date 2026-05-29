@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
-import OpenAI from "openai"
+import { GoogleGenerativeAI } from "@google/generative-ai"
 import Replicate from "replicate"
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || "",
-})
 
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN || "",
@@ -44,17 +40,131 @@ const TRANSFORMATION_PROMPTS = {
 - Create a dramatic but tasteful aesthetic transformation.`,
 }
 
+async function consumeStreamToBuffer(stream: any): Promise<Buffer> {
+  if (typeof stream.getReader === 'function') {
+    const reader = stream.getReader();
+    const chunks: Uint8Array[] = [];
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (value) {
+        chunks.push(value);
+      }
+    }
+    return Buffer.concat(chunks.map(c => Buffer.from(c)));
+  }
+  
+  if (typeof stream[Symbol.asyncIterator] === 'function') {
+    const chunks: Uint8Array[] = [];
+    for await (const chunk of stream) {
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    }
+    return Buffer.concat(chunks);
+  }
+
+  if (typeof stream.on === 'function') {
+    return new Promise((resolve, reject) => {
+      const chunks: any[] = [];
+      stream.on('data', (chunk: any) => chunks.push(chunk));
+      stream.on('end', () => resolve(Buffer.concat(chunks.map(c => Buffer.isBuffer(c) ? c : Buffer.from(c)))));
+      stream.on('error', (err: any) => reject(err));
+    });
+  }
+
+  throw new Error("Target is not a readable stream");
+}
+
+async function processReplicateResult(result: any): Promise<string[]> {
+  if (!result) return []
+
+  // Check if result is a stream
+  if (result && (typeof result.getReader === 'function' || typeof result[Symbol.asyncIterator] === 'function' || typeof result.on === 'function')) {
+    console.log("Result itself is a stream, consuming...")
+    const buffer = await consumeStreamToBuffer(result)
+    return [`data:image/png;base64,${buffer.toString("base64")}`]
+  }
+
+  // Handle async iterators
+  if (result && typeof result === 'object' && typeof result[Symbol.asyncIterator] === 'function') {
+    console.log('Result is an async iterator, consuming...')
+    const results: any[] = []
+    for await (const item of result as AsyncIterable<any>) {
+      results.push(item)
+    }
+    result = results
+  }
+
+  // If it's an array
+  if (Array.isArray(result)) {
+    const outputs: string[] = []
+    for (const item of result) {
+      if (!item) continue
+      if (typeof item === 'string') {
+        outputs.push(item)
+      } else if (typeof item.getReader === 'function' || typeof item[Symbol.asyncIterator] === 'function' || typeof item.on === 'function') {
+        console.log("Found stream in output array, consuming...")
+        const buffer = await consumeStreamToBuffer(item)
+        outputs.push(`data:image/png;base64,${buffer.toString("base64")}`)
+      } else if (typeof item === 'object') {
+        const url = item.url || item.output || item.image
+        if (url && typeof url === 'string') {
+          outputs.push(url)
+        } else if (url && (typeof url.getReader === 'function' || typeof url[Symbol.asyncIterator] === 'function' || typeof url.on === 'function')) {
+          console.log("Found stream inside item object, consuming...")
+          const buffer = await consumeStreamToBuffer(url)
+          outputs.push(`data:image/png;base64,${buffer.toString("base64")}`)
+        }
+      }
+    }
+    return outputs
+  }
+
+  // If it's a string
+  if (typeof result === 'string') {
+    return [result]
+  }
+
+  // If it's an object
+  if (typeof result === 'object') {
+    if ('output' in result) {
+      const outputValue = result.output
+      return Array.isArray(outputValue) ? processReplicateResult(outputValue) : processReplicateResult([outputValue])
+    }
+    if ('url' in result) {
+      return processReplicateResult(result.url)
+    }
+    if ('urls' in result) {
+      return processReplicateResult(result.urls)
+    }
+    if ('image' in result) {
+      return processReplicateResult(result.image)
+    }
+    if ('images' in result) {
+      return processReplicateResult(result.images)
+    }
+
+    const stringProps = Object.values(result).filter(
+      (v): v is string => typeof v === 'string' && (v.startsWith('http') || v.startsWith('data:'))
+    )
+    if (stringProps.length > 0) {
+      return stringProps
+    }
+  }
+
+  return []
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Check for API keys
-    const openaiKey = process.env.OPENAI_API_KEY
+    const geminiKey = process.env.GEMINI_API_KEY
     const replicateKey = process.env.REPLICATE_API_TOKEN
     
-    if (!openaiKey) {
+    if (!geminiKey) {
       return NextResponse.json(
         { 
           error: "API configuration error", 
-          details: "OpenAI API key is not configured. Please set OPENAI_API_KEY in your environment variables." 
+          details: "Gemini API key is not configured. Please set GEMINI_API_KEY in your environment variables." 
         },
         { status: 500 }
       )
@@ -114,8 +224,8 @@ export async function POST(request: NextRequest) {
     // Get transformation prompt for the surface type
     const transformationPrompt = TRANSFORMATION_PROMPTS[surfaceType as keyof typeof TRANSFORMATION_PROMPTS]
     
-    // Step 1: Use GPT-4 Vision to analyze the image and create a transformation prompt
-    console.log(`Step 1: Analyzing image with GPT-4 Vision for surface type: ${surfaceType}`)
+    // Step 1: Use Gemini Vision to analyze the image and create a transformation prompt
+    console.log(`Step 1: Analyzing image with Gemini for surface type: ${surfaceType}`)
     const analysisPrompt = `Analyze this image carefully. First, determine if the current finish is DARK or LIGHT.
 
 ABSOLUTE REQUIREMENTS - DO NOT CHANGE ANYTHING EXCEPT SURFACE FINISHES:
@@ -146,31 +256,24 @@ Create a concise transformation prompt (2-3 sentences) that:
 
 Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 sentences max).`
 
-    let analysisResponse
+    const genAI = new GoogleGenerativeAI(geminiKey)
+    const geminiModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" })
+
+    let transformationDescription = transformationPrompt
     try {
-      analysisResponse = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: analysisPrompt,
-              },
-              {
-                type: "image_url",
-                image_url: {
-                  url: `data:${mimeType};base64,${base64Image}`,
-                },
-              },
-            ],
-          },
-        ],
-        max_tokens: 200,
-      })
+      const result = await geminiModel.generateContent([
+        analysisPrompt,
+        {
+          inlineData: {
+            data: base64Image,
+            mimeType: mimeType
+          }
+        }
+      ])
+      const response = await result.response
+      transformationDescription = response.text().trim() || transformationPrompt
     } catch (error: any) {
-      if (error.status === 429 || error.message?.includes("rate limit")) {
+      if (error.status === 429 || error.message?.includes("rate limit") || error.message?.includes("quota")) {
         return NextResponse.json(
           { 
             error: "API rate limit exceeded", 
@@ -182,140 +285,58 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
       throw error
     }
 
-    const transformationDescription = analysisResponse.choices[0]?.message?.content || transformationPrompt
     console.log("Transformation description:", transformationDescription)
 
-    // Step 2: Use Replicate's Stable Diffusion image-to-image model
-    // This model accepts the original image and modifies it while maintaining structure
-    console.log("Step 2: Generating transformed image with Stable Diffusion image-to-image")
-    
-    // Replicate SDK accepts data URLs directly
-    const imageDataUrl = `data:${mimeType};base64,${base64Image}`
-    
-    // Try the most reliable model first
-    // Only try alternatives if the first one fails with a non-rate-limit error
-    let output: string[] | undefined
-    let modelUsed = ""
-    
-    // Check if OpenAI API key is available for gpt-image-1
-    const openaiApiKey = process.env.OPENAI_API_KEY
-    if (!openaiApiKey) {
-      console.warn("OPENAI_API_KEY not found. gpt-image-1 model will not be available.")
+    // Step 2: Upload the file to tmpfiles.org to get a public URL for Replicate/Gemini
+    console.log("Step 2: Uploading file to tmpfiles.org...")
+    let fileUrl = ""
+    try {
+      const extension = mimeType.split("/")[1] || "png"
+      const fileObject = new File([buffer], `image.${extension}`, { type: mimeType });
+      const uploadFormData = new FormData();
+      uploadFormData.append("file", fileObject);
+      const uploadResponse = await fetch("https://tmpfiles.org/api/v1/upload", {
+        method: "POST",
+        body: uploadFormData
+      });
+      const uploadData = await uploadResponse.json();
+      if (uploadData.status === "success" && uploadData.data?.url) {
+        const viewerUrl = uploadData.data.url;
+        fileUrl = viewerUrl.replace("https://tmpfiles.org/", "https://tmpfiles.org/dl/");
+        console.log("Uploaded file to tmpfiles.org successfully:", fileUrl);
+      } else {
+        throw new Error(uploadData.message || "Upload response status was not success");
+      }
+    } catch (uploadError: any) {
+      console.error("Failed to upload image to tmpfiles.org:", uploadError);
+      throw new Error(`Failed to upload image for processing: ${uploadError.message}`);
     }
+
+    // Step 3: Use Replicate's Gemini Flash Image (nano-banana) model
+    console.log("Step 3: Generating transformed image with google/nano-banana")
     
-    // Try the user-specified model first, then fallback to other img2img models
-    const modelsToTry = [
-      {
-        name: "openai/gpt-image-1",
-        params: {
-          prompt: `Transform this image: ${transformationDescription}. Maintain the exact same structure, layout, perspective, furniture, appliances, and all elements. Change ONLY the surface finishes and colors. Photorealistic result with high quality, realistic lighting.`,
-          image: imageDataUrl, // Multimodal input - both text and image
-          openai_api_key: openaiApiKey || "", // Required for bring-your-own-token model
-          // Note: This model requires a verified OpenAI API key
-          // Your OpenAI account will be charged for usage
-        }
-      },
-      // Note: Many Replicate img2img models return 404
-      // If gpt-image-1 fails, you'll need to find working models on Replicate
-      // Visit https://replicate.com/explore and search for "img2img" or "image-to-image"
-      // Then update the model names below with working models from your account
-    ]
-    
-    const primaryModel = modelsToTry[0]
+    let output: string[] | undefined
+    const modelUsed = "google/nano-banana"
     
     try {
-      console.log(`Using model: ${primaryModel.name}`)
+      console.log(`Using model: ${modelUsed}`)
       console.log(`Replicate auth token present: ${!!process.env.REPLICATE_API_TOKEN}`)
-      console.log(`Replicate auth token length: ${process.env.REPLICATE_API_TOKEN?.length || 0}`)
       
-      // Try the API call
-      console.log(`Calling model: ${primaryModel.name}`)
-      console.log(`Input params keys:`, Object.keys(primaryModel.params))
-      console.log(`Image data URL length:`, imageDataUrl?.length || 0)
-      console.log(`Image data URL preview:`, imageDataUrl?.substring(0, 50) || 'N/A')
+      const promptText = `Professional high-quality photo: ${transformationDescription}. Maintain the exact same structure, layout, perspective, furniture, appliances, and all elements. Change ONLY the surface finishes and colors. Photorealistic result with high quality, realistic lighting.`
       
-      let result = await replicate.run(primaryModel.name as `${string}/${string}`, { input: primaryModel.params })
+      let result = await replicate.run(modelUsed as `${string}/${string}`, {
+        input: {
+          prompt: promptText,
+          image_input: [fileUrl],
+          aspect_ratio: "match_input_image",
+          output_format: "png"
+        }
+      })
       console.log(`Model result type:`, typeof result)
       console.log(`Model result:`, result)
-      console.log(`Model result is array:`, Array.isArray(result))
-      if (result && typeof result === 'object') {
-        console.log(`Model result keys:`, Object.keys(result))
-      }
       
-      // Handle async iterators (some Replicate models return async iterators)
-      if (result && typeof result === 'object' && typeof (result as any)[Symbol.asyncIterator] === 'function') {
-        console.log('Result is an async iterator, consuming...')
-        const results: string[] = []
-        for await (const item of result as AsyncIterable<any>) {
-          console.log('Iterator item:', item)
-          if (typeof item === 'string') {
-            results.push(item)
-          } else if (item && typeof item === 'object') {
-            // Extract URL from iterator items
-            const url = (item as any).url || (item as any).output || (item as any).image
-            if (url && typeof url === 'string') {
-              results.push(url)
-            }
-          }
-        }
-        result = results.length > 0 ? results : result
-        console.log('Consumed iterator, results:', results)
-      }
-      
-      // Handle different output formats
-      if (Array.isArray(result)) {
-        // Filter out functions and extract URLs
-        output = result
-          .map(item => {
-            if (typeof item === 'string') return item
-            if (typeof item === 'function') {
-              console.warn('Found function in output array, skipping')
-              return null
-            }
-            if (item && typeof item === 'object') {
-              return (item as any).url || (item as any).output || (item as any).image || null
-            }
-            return null
-          })
-          .filter((item): item is string => item !== null && typeof item === 'string')
-      } else if (typeof result === 'string') {
-        output = [result]
-      } else if (result && typeof result === 'object') {
-        // Handle various object formats
-        if ('output' in result) {
-          // Some models return { output: [...] } or { output: "url" }
-          const outputValue = (result as any).output
-          output = Array.isArray(outputValue) ? outputValue : [outputValue]
-        } else if ('url' in result) {
-          // Some models return { url: "..." }
-          output = [(result as any).url]
-        } else if ('urls' in result && Array.isArray((result as any).urls)) {
-          // Some models return { urls: [...] }
-          output = (result as any).urls
-        } else if ('image' in result) {
-          // Some models return { image: "..." }
-          output = [(result as any).image]
-        } else if ('images' in result && Array.isArray((result as any).images)) {
-          // Some models return { images: [...] }
-          output = (result as any).images
-        } else {
-          // Try to find any string property that looks like a URL
-          const stringProps = Object.values(result).filter(v => typeof v === 'string' && (v.startsWith('http') || v.startsWith('data:')))
-          if (stringProps.length > 0) {
-            output = stringProps as string[]
-          } else {
-            console.error(`Unexpected output format:`, result)
-            console.error(`Object keys:`, Object.keys(result))
-            throw new Error(`Unexpected output format from model: object with keys ${Object.keys(result).join(', ')}`)
-          }
-        }
-      } else {
-        console.error(`Unexpected output format:`, result)
-        throw new Error(`Unexpected output format from model: ${typeof result}`)
-      }
-      
-      modelUsed = primaryModel.name
-      console.log(`Successfully used model: ${primaryModel.name}`, `Output length: ${output?.length}`)
+      output = await processReplicateResult(result)
+      console.log(`Successfully used model: ${modelUsed}`, `Output length: ${output?.length}`)
     } catch (error: any) {
       console.error(`Model error details:`, {
         status: error.status,
@@ -326,9 +347,7 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
         request: error.request?.url,
       })
       
-      // Check if it's an organization verification error for gpt-image-1
       const errorMessage = error.message || JSON.stringify(error.body || error.response || {})
-      const isOrgVerificationError = errorMessage?.includes("organization must be verified") || errorMessage?.includes("Verify Organization")
       
       if (error.status === 429 || errorMessage?.includes("rate limit") || errorMessage?.includes("too many requests")) {
         return NextResponse.json(
@@ -340,220 +359,54 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
         )
       }
       
-      // If it's a 404 or organization verification error, try other models from our list
-      if (error.status === 404 || isOrgVerificationError || errorMessage?.includes("model not found") || errorMessage?.includes("not found")) {
-        if (isOrgVerificationError) {
-          console.log("OpenAI organization verification required for gpt-image-1. Falling back to other models...")
-        } else {
-          console.log(`Primary model not found, trying alternatives...`)
-        }
-        let lastError: Error | null = error
-        
-        // Try remaining models from our list
-        for (let i = 1; i < modelsToTry.length; i++) {
-          const model = modelsToTry[i]
-          try {
-            console.log(`Trying model ${i + 1}/${modelsToTry.length}: ${model.name}`)
-            // Add a small delay between attempts to avoid rate limits
-            await new Promise(resolve => setTimeout(resolve, 1000))
-            let fallbackResult = await replicate.run(model.name as `${string}/${string}`, { input: model.params })
-            console.log(`Fallback model result type:`, typeof fallbackResult)
-            console.log(`Fallback model result:`, fallbackResult)
-            
-            // Handle async iterators (same as primary model)
-            if (fallbackResult && typeof fallbackResult === 'object' && typeof (fallbackResult as any)[Symbol.asyncIterator] === 'function') {
-              console.log('Fallback result is an async iterator, consuming...')
-              const results: string[] = []
-              for await (const item of fallbackResult as AsyncIterable<any>) {
-                console.log('Fallback iterator item:', item)
-                if (typeof item === 'string') {
-                  results.push(item)
-                } else if (item && typeof item === 'object') {
-                  const url = (item as any).url || (item as any).output || (item as any).image
-                  if (url && typeof url === 'string') {
-                    results.push(url)
-                  }
-                }
-              }
-              fallbackResult = results.length > 0 ? results : fallbackResult
-              console.log('Consumed fallback iterator, results:', results)
-            }
-            
-            // Handle different output formats (same as primary model)
-            if (Array.isArray(fallbackResult)) {
-              // Filter out functions and extract URLs
-              output = fallbackResult
-                .map(item => {
-                  if (typeof item === 'string') return item
-                  if (typeof item === 'function') {
-                    console.warn('Found function in fallback output array, skipping')
-                    return null
-                  }
-                  if (item && typeof item === 'object') {
-                    return (item as any).url || (item as any).output || (item as any).image || null
-                  }
-                  return null
-                })
-                .filter((item): item is string => item !== null && typeof item === 'string')
-            } else if (typeof fallbackResult === 'string') {
-              output = [fallbackResult]
-            } else if (fallbackResult && typeof fallbackResult === 'object') {
-              // Handle various object formats
-              if ('output' in fallbackResult) {
-                const outputValue = (fallbackResult as any).output
-                output = Array.isArray(outputValue) ? outputValue : [outputValue]
-              } else if ('url' in fallbackResult) {
-                output = [(fallbackResult as any).url]
-              } else if ('urls' in fallbackResult && Array.isArray((fallbackResult as any).urls)) {
-                output = (fallbackResult as any).urls
-              } else if ('image' in fallbackResult) {
-                output = [(fallbackResult as any).image]
-              } else if ('images' in fallbackResult && Array.isArray((fallbackResult as any).images)) {
-                output = (fallbackResult as any).images
-              } else {
-                // Try to find any string property that looks like a URL
-                const stringProps = Object.values(fallbackResult).filter(v => typeof v === 'string' && (v.startsWith('http') || v.startsWith('data:')))
-                if (stringProps.length > 0) {
-                  output = stringProps as string[]
-                } else {
-                  console.error(`Unexpected output format from fallback:`, fallbackResult)
-                  console.error(`Object keys:`, Object.keys(fallbackResult))
-                  throw new Error(`Unexpected output format from model: object with keys ${Object.keys(fallbackResult).join(', ')}`)
-                }
-              }
-            } else {
-              console.error(`Unexpected output format from fallback:`, fallbackResult)
-              throw new Error(`Unexpected output format from model: ${typeof fallbackResult}`)
-            }
-            
-            modelUsed = model.name
-            console.log(`Successfully used model: ${model.name}`, `Output length: ${output?.length}`)
-            break
-          } catch (fallbackError: any) {
-            if (fallbackError.status === 429 || fallbackError.message?.includes("rate limit")) {
-              return NextResponse.json(
-                { 
-                  error: "API rate limit exceeded", 
-                  details: "You've made too many requests. Please wait a few minutes and try again." 
-                },
-                { status: 429 }
-              )
-            }
-            console.log(`Model ${model.name} failed:`, fallbackError.message)
-            lastError = fallbackError
-            continue
-          }
-        }
-        
-        if (!output || !modelUsed) {
-          // Provide helpful error message
-          const isOrgError = isOrgVerificationError
-          return NextResponse.json(
-            { 
-              error: isOrgError ? "OpenAI organization verification required" : "No available image-to-image models found", 
-              details: isOrgError ? `The gpt-image-1 model requires your OpenAI organization to be verified.
-
-**If you just verified:**
-- It can take up to 30 minutes for access to propagate after verification
-- Try waiting 10-15 more minutes and then try again
-- You can also try generating a new API key at https://platform.openai.com/api-keys to refresh the status
-
-**To verify (if not done yet):**
-1. Go to https://platform.openai.com/settings/organization/general
-2. Click on "Verify Organization"
-3. Wait up to 30 minutes for access to propagate
-
-**Current Status:**
-- All Replicate fallback models are returning 404 (models not found)
-- This means those models don't exist or aren't available in your account
-- Once gpt-image-1 verification propagates, it should work
-
-**Alternative Solution:**
-If verification takes too long, you can find working img2img models at https://replicate.com/explore
-Search for "img2img" or "image-to-image" and share the model name to update the code.
-
-Last error: ${lastError?.message || "Unknown error"}` : `All attempted models returned 404 errors. This means the models don't exist or aren't available in your Replicate account.
-
-**Solutions:**
-
-1. **Invalid API Token**: Your REPLICATE_API_TOKEN in .env.local may be incorrect or expired.
-   - Get your token from: https://replicate.com/account/api-tokens
-   - Make sure it starts with "r8_" and is the full token
-
-2. **Models Not Available**: The models may not be available in your account or have been removed.
-   - Visit https://replicate.com/explore to browse available models
-   - Search for "img2img" or "image-to-image" models
-   - Copy the exact model identifier (owner/model format)
-
-3. **Account Permissions**: Your account may not have access to these models.
-   - Check your Replicate account dashboard
-   - Verify your account status and billing
-
-To fix this:
-- Verify your API token at https://replicate.com/account/api-tokens
-- Find a working img2img model at https://replicate.com/explore
-- Update the model name in the code with a model that works for your account
-
-Last error: ${lastError?.message || "Unknown error"}` 
-            },
-            { status: 404 }
-          )
-        }
-      } else {
-        // Re-throw other errors
-        throw error
-      }
+      return NextResponse.json(
+        { 
+          error: "Failed to execute google/nano-banana model", 
+          details: `Image generation failed. Please verify your Replicate account status and credits. Last error: ${errorMessage}` 
+        },
+        { status: 500 }
+      )
     }
 
     console.log(`Final output:`, output)
-    console.log(`Output length:`, output?.length)
-    console.log(`Output type:`, typeof output)
-    console.log(`Model used: ${modelUsed}`)
-    if (output) {
-      console.log(`Output array contents:`, output.map((item, idx) => ({ index: idx, type: typeof item, value: typeof item === 'string' ? item.substring(0, 100) + '...' : item })))
-    }
     
     if (!output || output.length === 0) {
-      console.error("Output is empty or undefined")
-      console.error(`Model attempted: ${modelUsed || 'None'}`)
-      console.error("This might mean:")
-      console.error("1. The model doesn't support the input format (data URLs, etc.)")
-      console.error("2. The model returned an empty result")
-      console.error("3. The output format is different than expected")
-      console.error("4. REPLICATE_API_TOKEN might not be set correctly (check .env.local)")
-      
-      // Provide more helpful error message
-      const errorDetails = modelUsed 
-        ? `Model "${modelUsed}" returned empty output. This could mean the model doesn't support the input format or there's a configuration issue.`
-        : "No model was successfully executed. Check that your API keys are set correctly in .env.local"
-      
-      throw new Error(`Failed to generate image: ${errorDetails}`)
+      throw new Error(`Failed to generate image: Model returned empty output.`)
     }
     
     const generatedImageUrl = output[0]
     if (!generatedImageUrl || typeof generatedImageUrl !== 'string') {
-      console.error("Generated image URL is invalid:", generatedImageUrl)
       throw new Error(`Failed to generate image: Invalid output format. Expected string URL, got ${typeof generatedImageUrl}`)
     }
     
     console.log(`Generated image URL:`, generatedImageUrl)
 
-    console.log("Image generated successfully")
+    // Step 4: Download the generated image and convert to base64
+    let imageBase64: string
+    let contentType: string
 
-    // Step 3: Download the generated image and convert to base64
-    console.log("Step 3: Downloading generated image")
-    const imageFetch = await fetch(generatedImageUrl)
-    const generatedImageArrayBuffer = await imageFetch.arrayBuffer()
-    const imageBase64 = Buffer.from(generatedImageArrayBuffer).toString("base64")
-
-    // Get the content type from the response
-    const contentType = imageFetch.headers.get("content-type") || "image/png"
+    if (generatedImageUrl.startsWith("data:")) {
+      console.log("Image returned as data URL, skipping download")
+      const match = generatedImageUrl.match(/^data:([^;]+);base64,(.+)$/)
+      if (match) {
+        contentType = match[1]
+        imageBase64 = match[2]
+      } else {
+        throw new Error("Invalid data URL format returned from stream processing")
+      }
+    } else {
+      console.log("Step 4: Downloading generated image")
+      const imageFetch = await fetch(generatedImageUrl)
+      const generatedImageArrayBuffer = await imageFetch.arrayBuffer()
+      imageBase64 = Buffer.from(generatedImageArrayBuffer).toString("base64")
+      contentType = imageFetch.headers.get("content-type") || "image/png"
+    }
 
     return NextResponse.json({
       transformedImage: imageBase64,
       mimeType: contentType,
-      description: `Transformed ${surfaceType} using Stable Diffusion image-to-image`,
-      note: "Image generated with Stable Diffusion image-to-image model",
+      description: `Transformed ${surfaceType} using Gemini Flash Image (nano-banana)`,
+      note: "Image generated with Google Gemini 2.5 Flash Image model on Replicate",
     })
   } catch (error: any) {
     console.error("Image transformation error:", error)
