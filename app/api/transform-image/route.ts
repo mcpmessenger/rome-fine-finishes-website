@@ -257,7 +257,7 @@ Create a concise transformation prompt (2-3 sentences) that:
 Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 sentences max).`
 
     const genAI = new GoogleGenerativeAI(geminiKey)
-    const geminiModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" })
+    let geminiModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" })
 
     let transformationDescription = transformationPrompt
     try {
@@ -273,16 +273,32 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
       const response = await result.response
       transformationDescription = response.text().trim() || transformationPrompt
     } catch (error: any) {
-      if (error.status === 429 || error.message?.includes("rate limit") || error.message?.includes("quota")) {
-        return NextResponse.json(
-          { 
-            error: "API rate limit exceeded", 
-            details: "You've made too many requests. Please wait a few minutes and try again." 
-          },
-          { status: 429 }
-        )
+      console.warn("gemini-2.5-flash failed, trying fallback to gemini-1.5-flash...", error.message)
+      try {
+        geminiModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+        const result = await geminiModel.generateContent([
+          analysisPrompt,
+          {
+            inlineData: {
+              data: base64Image,
+              mimeType: mimeType
+            }
+          }
+        ])
+        const response = await result.response
+        transformationDescription = response.text().trim() || transformationPrompt
+      } catch (fallbackError: any) {
+        if (fallbackError.status === 429 || fallbackError.message?.includes("rate limit") || fallbackError.message?.includes("quota") || fallbackError.message?.includes("Service Unavailable") || fallbackError.status === 503) {
+          return NextResponse.json(
+            { 
+              error: "API rate limit exceeded", 
+              details: "Google's Gemini API is currently experiencing high demand. Please try again in a few moments or use manual selection." 
+            },
+            { status: 429 }
+          )
+        }
+        throw fallbackError
       }
-      throw error
     }
 
     console.log("Transformation description:", transformationDescription)

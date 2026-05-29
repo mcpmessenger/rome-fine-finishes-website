@@ -65,18 +65,33 @@ Be specific and accurate. Return ONLY the single word: "cabinets", "fireplace", 
 
     // Initialize Gemini API
     const genAI = new GoogleGenerativeAI(apiKey)
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" })
+    let model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" })
 
-    // Call Gemini Vision API
-    const result = await model.generateContent([
-      detectionPrompt,
-      {
-        inlineData: {
-          data: base64Image,
-          mimeType: mimeType
+    // Call Gemini Vision API with automatic fallback to gemini-1.5-flash on high demand/errors
+    let result
+    try {
+      result = await model.generateContent([
+        detectionPrompt,
+        {
+          inlineData: {
+            data: base64Image,
+            mimeType: mimeType
+          }
         }
-      }
-    ])
+      ])
+    } catch (geminiError: any) {
+      console.warn("gemini-2.5-flash failed or experienced high demand, trying fallback to gemini-1.5-flash...", geminiError.message)
+      model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+      result = await model.generateContent([
+        detectionPrompt,
+        {
+          inlineData: {
+            data: base64Image,
+            mimeType: mimeType
+          }
+        }
+      ])
+    }
 
     const response = await result.response
     const detectedType = response.text().trim().toLowerCase() || "room"
@@ -98,9 +113,9 @@ Be specific and accurate. Return ONLY the single word: "cabinets", "fireplace", 
     if (error.message?.includes("API_KEY") || error.message?.includes("api key") || error.status === 401) {
       errorMessage = "API configuration error"
       errorDetails = "Invalid or missing Gemini API key. Please check your environment variables."
-    } else if (error.message?.includes("quota") || error.message?.includes("rate limit") || error.status === 429) {
+    } else if (error.message?.includes("quota") || error.message?.includes("rate limit") || error.status === 429 || error.message?.includes("Service Unavailable") || error.status === 503) {
       errorMessage = "API rate limit exceeded"
-      errorDetails = "You've made too many requests. Please wait a few minutes and try again. You can use the manual selection option below to continue without waiting."
+      errorDetails = "Google's Gemini API is currently experiencing high demand. Please try again in a few moments or use manual selection."
     } else if (error.message?.includes("insufficient_quota") || error.status === 402) {
       errorMessage = "Insufficient API quota"
       errorDetails = "Your Gemini account has insufficient credits. Please check your billing settings."
