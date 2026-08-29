@@ -303,30 +303,9 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
 
     console.log("Transformation description:", transformationDescription)
 
-    // Step 2: Upload the file to tmpfiles.org to get a public URL for Replicate/Gemini
-    console.log("Step 2: Uploading file to tmpfiles.org...")
-    let fileUrl = ""
-    try {
-      const extension = mimeType.split("/")[1] || "png"
-      const fileObject = new File([buffer], `image.${extension}`, { type: mimeType });
-      const uploadFormData = new FormData();
-      uploadFormData.append("file", fileObject);
-      const uploadResponse = await fetch("https://tmpfiles.org/api/v1/upload", {
-        method: "POST",
-        body: uploadFormData
-      });
-      const uploadData = await uploadResponse.json();
-      if (uploadData.status === "success" && uploadData.data?.url) {
-        const viewerUrl = uploadData.data.url;
-        fileUrl = viewerUrl.replace("https://tmpfiles.org/", "https://tmpfiles.org/dl/");
-        console.log("Uploaded file to tmpfiles.org successfully:", fileUrl);
-      } else {
-        throw new Error(uploadData.message || "Upload response status was not success");
-      }
-    } catch (uploadError: any) {
-      console.error("Failed to upload image to tmpfiles.org:", uploadError);
-      throw new Error(`Failed to upload image for processing: ${uploadError.message}`);
-    }
+    // Step 2: Prepare Data URI for Replicate input
+    console.log("Step 2: Preparing Data URI for Replicate...")
+    const fileUrl = `data:${mimeType};base64,${base64Image}`
 
     // Step 3: Use Replicate's Gemini Flash Image (nano-banana) model
     console.log("Step 3: Generating transformed image with google/nano-banana")
@@ -343,7 +322,7 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
       let result = await replicate.run(modelUsed as `${string}/${string}`, {
         input: {
           prompt: promptText,
-          image_input: [fileUrl],
+          image: fileUrl,
           aspect_ratio: "match_input_image",
           output_format: "png"
         }
