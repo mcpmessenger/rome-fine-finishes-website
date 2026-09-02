@@ -303,9 +303,22 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
 
     console.log("Transformation description:", transformationDescription)
 
-    // Step 2: Prepare Data URI for Replicate input
-    console.log("Step 2: Preparing Data URI for Replicate...")
-    const fileUrl = `data:${mimeType};base64,${base64Image}`
+    // Step 2: Upload image directly to Replicate Files API
+    console.log("Step 2: Uploading image to Replicate...")
+    let uploadedFileUrl: string | undefined;
+    try {
+      if (replicate.files && replicate.files.create) {
+        const fileObj = await replicate.files.create(buffer);
+        uploadedFileUrl = fileObj.urls?.get;
+      }
+    } catch (e) {
+      console.warn("Failed to upload file to replicate files API", e);
+    }
+
+    // Fallback to Data URI if upload fails
+    if (!uploadedFileUrl) {
+      uploadedFileUrl = `data:${mimeType};base64,${base64Image}`;
+    }
 
     // Step 3: Use Replicate's Gemini Flash Image (nano-banana) model
     console.log("Step 3: Generating transformed image with google/nano-banana")
@@ -322,7 +335,7 @@ Return ONLY the transformation prompt, nothing else. Keep it concise (2-3 senten
       let result = await replicate.run(modelUsed as `${string}/${string}`, {
         input: {
           prompt: promptText,
-          image: fileUrl,
+          image_input: [uploadedFileUrl],
           aspect_ratio: "match_input_image",
           output_format: "png"
         }
